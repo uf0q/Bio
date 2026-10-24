@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3asm - Personal Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#1c1c1c',
+                        cardBg: '#252525',
+                        accent: '#c57b43',
+                        accentHover: '#d98c52'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        arabic: ['Cairo', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #1c1c1c;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        html[dir="rtl"] body {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Smooth page transitions */
+        .page-section {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(12px);
+        }
+
+        .page-section.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Portrait edge blending */
+        .portrait-fade {
+            mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0.9) 100%),
+                linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 18%, rgba(0, 0, 0, 1) 82%, rgba(0, 0, 0, 0) 100%);
+            -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0) 100%);
+        }
+
+        /* Instant Mobile Hero Overlay & Hardware Blur */
+        .mobile-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(28, 28, 28, 0.94) 0%, rgba(28, 28, 28, 0.45) 50%, rgba(28, 28, 28, 0.72) 100%);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            pointer-events: none;
+            z-index: 10;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        @media (max-width: 767px) {
+            .portrait-fade {
+                mask-image: none;
+                -webkit-mask-image: none;
+            }
+
+            /* Instant hardware blur from frame 0 */
+            #hero-portrait-img {
+                filter: blur(3px) contrast(1.25) brightness(0.75) !important;
+                -webkit-filter: blur(3px) contrast(1.25) brightness(0.75) !important;
+                transform: scale(1.06) translateZ(0) !important;
+                -webkit-transform: scale(1.06) translateZ(0) !important;
+                will-change: filter, transform;
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+            }
+
+            #hero-portrait-img.grayscale {
+                filter: blur(3px) grayscale(100%) contrast(1.25) brightness(0.75) !important;
+                -webkit-filter: blur(3px) grayscale(100%) contrast(1.25) brightness(0.75) !important;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .mobile-hero-overlay {
+                display: none !important;
+            }
+
+            #hero-portrait-img {
+                filter: contrast(1.25) brightness(0.9) !important;
+                -webkit-filter: contrast(1.25) brightness(0.9) !important;
+                transform: scale(1) translateZ(0) !important;
+                -webkit-transform: scale(1) translateZ(0) !important;
+            }
+
+            #hero-portrait-img.grayscale {
+                filter: grayscale(100%) contrast(1.25) brightness(0.9) !important;
+                -webkit-filter: grayscale(100%) contrast(1.25) brightness(0.9) !important;
+            }
+        }
+
+        /* Custom subtle scrollbars for inner content on mobile */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 10px;
+        }
+
+        /* Luxury Cinema Entrance Fade Veil (شاشة التلاشي التدريجي الفخم والسلس عند الدخول) */
+        #site-veil {
+            position: fixed;
+            inset: 0;
+            background-color: #1c1c1c;
+            z-index: 99999;
+            pointer-events: none;
+            animation: veilFadeDissolve 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            will-change: opacity, visibility;
+        }
+
+        @keyframes veilFadeDissolve {
+            0% {
+                opacity: 1;
+                visibility: visible;
+            }
+            15% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Subtle Staggered Float-in for Hero Text */
+        @keyframes heroEntranceSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-entrance-anim {
+            animation: heroEntranceSlide 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+            will-change: opacity, transform;
+        }
+
+        /* Top Nav Subtle Slide */
+        @keyframes topNavSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .top-nav-entrance {
+            animation: topNavSlide 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+            will-change: opacity, transform;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen overflow-hidden bg-darkBg select-none m-0 p-0">
+
+    <!-- Cinema Entrance Fade Veil (شاشة التلاشي التدريجي السريع والفخم) -->
+    <div id="site-veil"></div>
+
+    <!-- Main Full-Screen App Container -->
+    <main class="relative w-full h-full bg-darkBg overflow-hidden flex flex-col justify-between text-white">
+
+        <!-- ================= TOP NAVIGATION BAR ================= -->
+        <header class="top-nav-entrance relative z-30 flex items-center justify-between px-6 sm:px-16 lg:px-24 pt-6 sm:pt-8 pb-4">
+            <!-- Brand Logo -->
+            <a href="#home" onclick="switchPage(0); return false;"
+                class="font-serif italic text-xl sm:text-2xl tracking-wide text-white hover:text-accent transition-colors">
+                3asm
+            </a>
+
+            <!-- Center Navigation Links (Hidden on mobile, shown on desktop: md:flex) -->
+            <nav class="hidden md:flex items-center gap-6 sm:gap-11 text-xs sm:text-[13px] tracking-wider font-medium">
+                <button onclick="switchPage(0)" id="nav-0"
+                    class="nav-btn relative py-1.5 text-white/60 hover:text-white transition-colors">
+                    <span data-i18n="nav_home">home</span>
+                    <span
+                        class="nav-indicator absolute bottom-0 left-0 w-full h-[1.5px] bg-white transition-all duration-300 opacity-0 scale-x-0"></span>
+                </button>
+                <button onclick="switchPage(1)" id="nav-1" class="nav-btn relative py-1.5 text-white transition-colors">
+                    <span data-i18n="nav_creatives">creatives</span>
+                    <span
+                        class="nav-indicator absolute bottom-0 left-0 w-full h-[1.5px] bg-white transition-all duration-300 opacity-100 scale-x-100"></span>
+                </button>
+                <button onclick="switchPage(2)" id="nav-2"
+                    class="nav-btn relative py-1.5 text-white/60 hover:text-white transition-colors">
+                    <span data-i18n="nav_jobs">jobs</span>
+                    <span
+                        class="nav-indicator absolute bottom-0 left-0 w-full h-[1.5px] bg-white transition-all duration-300 opacity-0 scale-x-0"></span>
+                </button>
+            </nav>
+
+            <!-- Top Right Action Area -->
+            <div class="flex items-center gap-3">
+                <!-- Desktop Action Icons: (Language Translation Toggle Button + Quick Contact Modal Trigger) -->
+                <div class="hidden md:flex items-center gap-3">
+                    <!-- Language Translation Toggle Button -->
+                    <button onclick="toggleLanguage()" title="Translate / ترجمة"
+                        class="group flex items-center gap-1.5 px-2.5 h-8 rounded-full border border-white/30 hover:border-accent text-white/80 hover:text-white transition-all duration-300 bg-white/5 hover:bg-accent/10">
+                        <svg class="w-3.5 h-3.5 text-accent group-hover:rotate-12 transition-transform" fill="none"
+                            stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                        </svg>
+                        <span id="lang-badge" class="text-[11px] font-semibold tracking-wider">AR</span>
+                    </button>
+
+                    <!-- Original Top-Right Circular Icon (Email / Search Modal Trigger) -->
+                    <button onclick="toggleContactModal()" title="Quick Contact / Search"
+                        class="w-8 h-8 rounded-full border border-white/40 hover:border-accent flex items-center justify-center text-white/80 hover:text-accent transition-all duration-300 hover:scale-105">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.7"
+                            viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path stroke-linecap="round" d="M20 20l-3.5-3.5"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Mobile Only: "المزيد" (More) Button in place of Contact / Language buttons -->
+                <button onclick="toggleMobileMenu()" id="mobile-menu-btn" title="المزيد / More"
+                    class="md:hidden flex items-center gap-2 px-3.5 h-8 rounded-full border border-white/40 hover:border-accent text-white/90 hover:text-white bg-white/5 hover:bg-accent/10 transition-all duration-300 active:scale-95">
+                    <span data-i18n="nav_more" class="text-xs font-medium tracking-wide">More</span>
+                    <svg class="w-3.5 h-3.5 text-accent" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- ================= RIGHT SIDE VERTICAL PAGE BARS ================= -->
+        <!-- Each vertical bar switches to a page (0, 1, 2) -->
+        <aside
+            class=" absolute right-6 sm:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3.5">
+            <button onclick="switchPage(0)" aria-label="Page 1" class="rect-bar group p-1.5 focus:outline-none">
+                <span id="bar-0" class="block w-[3px] h-8 rounded-full transition-all duration-300 bg-accent"></span>
+            </button>
+            <button onclick="switchPage(1)" aria-label="Page 2" class="rect-bar group p-1.5 focus:outline-none">
+                <span id="bar-1"
+                    class="block w-[2px] h-8 rounded-full transition-all duration-300 bg-white/35 group-hover:bg-white/70"></span>
+            </button>
+            <button onclick="switchPage(2)" aria-label="Page 3" class="rect-bar group p-1.5 focus:outline-none">
+                <span id="bar-2"
+                    class="block w-[2px] h-8 rounded-full transition-all duration-300 bg-white/35 group-hover:bg-white/70"></span>
+            </button>
+        </aside>
+
+        <!-- ================= PAGES CONTAINER ================= -->
+        <div class="relative flex-1 w-full overflow-hidden">
+
+            <!-- ==================== PAGE 1: HERO / PROFILE (Exact Image Match) ==================== -->
+            <section id="page-0"
+                class="page-section active flex flex-col md:flex-row items-center justify-center md:justify-between px-8 sm:px-16 md:px-28 lg:px-36 pt-4 pb-12 h-full">
+
+                <!-- Left Column: Name, Role & CTA -->
+                <div class="hero-entrance-anim relative z-20 w-full md:w-1/2 flex flex-col justify-center items-start">
+                    <!-- Vertical Line + Name/Title Block -->
+                    <div class="flex items-stretch gap-5 mb-8">
+                        <div class="w-[1.5px] bg-white/80 md:bg-white/60 self-stretch my-1"></div>
+                        <div>
+                            <h1 data-i18n="hero_name"
+                                class="text-4xl sm:text-5xl lg:text-[54px] font-light tracking-wide text-white leading-tight drop-shadow-md md:drop-shadow-none">
+                                mutasim
+                            </h1>
+                            <p data-i18n="hero_role"
+                                class="text-base sm:text-lg lg:text-[20px] text-white/85 md:text-white/70 font-light tracking-wide mt-2 drop-shadow-md md:drop-shadow-none">
+                                programmer / psychologist
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rounded Orange Outline Contact Button -->
+                    <button onclick="toggleContactModal()"
+                        class="px-11 py-3 rounded-full border border-accent bg-darkBg/40 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none text-white/95 hover:bg-accent hover:text-white text-xs sm:text-sm tracking-wider transition-all duration-300 shadow-sm hover:shadow-accent/20">
+                        <span data-i18n="btn_contact">contact</span>
+                    </button>
+                </div>
+
+                <!-- Right Column: Hero Portrait (Pre-hydrated directly with zero flicker) -->
+                <div
+                    class="absolute inset-0 md:inset-auto md:right-20 lg:right-32 md:bottom-0 w-full md:w-[480px] lg:w-[560px] h-full md:h-[82vh] pointer-events-none flex items-end justify-center z-0 md:z-10 overflow-hidden">
+                    <img id="hero-portrait-img" src="hero-portrait.jpg" onerror="this.src='hero-portrait.jpg'"
+                        alt="mutasim Portrait"
+                        class="portrait-fade w-full h-full object-cover object-top grayscale-0" />
+                    <script>
+                            (function () {
+                                var img = document.getElementById('hero-portrait-img');
+                                if (!img) return;
+                                var cachedImg = null;
+                                var cachedMode = null;
+                                try {
+                                    cachedImg = localStorage.getItem('portfolio_hero_image');
+                                    cachedMode = localStorage.getItem('portfolio_hero_color_mode');
+                                } catch (e) { }
+
+                                // Don't re-assign src if it's already hero-portrait.jpg
+                                if (cachedImg && !cachedImg.endsWith('hero-portrait.jpg')) {
+                                    var currentSrc = img.getAttribute('src');
+                                    if (currentSrc !== cachedImg && img.dataset.appliedSrc !== cachedImg) {
+                                        img.src = cachedImg;
+                                        img.dataset.appliedSrc = cachedImg;
+                                    }
+                                } else {
+                                    img.dataset.appliedSrc = 'hero-portrait.jpg';
+                                }
+
+                                if (cachedMode === 'grayscale') {
+                                    img.classList.remove('grayscale-0');
+                                    img.classList.add('grayscale');
+                                } else {
+                                    img.classList.remove('grayscale');
+                                    img.classList.add('grayscale-0');
+                                }
+                            })();
+                    </script>
+                    <!-- Mobile subtle dark gradient overlay with instant hardware backdrop blur -->
+                    <div class="mobile-hero-overlay"></div>
+                </div>
+
+                <!-- Bottom Left: View Projects Trigger -->
+                <div class="absolute bottom-9 left-8 sm:left-16 lg:left-24 flex items-center gap-4 z-20">
+                    <span class="w-10 h-[1px] bg-white/40"></span>
+                    <button onclick="switchPage(1)"
+                        class="group flex items-center gap-3 text-xs sm:text-sm tracking-wider text-white/90 hover:text-accent transition-colors">
+                        <span data-i18n="view_projects" class="font-medium">view projects</span>
+                        <span
+                            class="w-6 h-6 rounded-full border border-white/60 group-hover:border-accent flex items-center justify-center transition-all group-hover:translate-y-0.5">
+                            <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ==================== PAGE 2: CREATIVES / PROJECTS ==================== -->
+            <section id="page-1"
+                class="page-section flex flex-col justify-between px-8 sm:px-16 md:px-28 lg:px-36 py-8 h-full custom-scroll overflow-y-auto">
+                <div class="my-auto">
+                    <!-- Header -->
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-[2px] h-10 bg-accent"></div>
+                        <div>
+                            <h2 data-i18n="page2_title"
+                                class="text-2xl sm:text-3xl font-light text-white tracking-wide">Selected Works</h2>
+                            <p data-i18n="page2_subtitle" class="text-xs sm:text-sm text-white/50 font-light">Visual
+                                storytelling, brand identity & monochrome photography</p>
+                        </div>
+                    </div>
+
+                    <!-- Projects Grid (Editable Cards) -->
+                    <div id="projects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pr-6">
+                        <!-- Project Card 1 -->
+                        <div
+                            class="group bg-cardBg/80 border border-white/5 hover:border-accent/50 rounded-lg overflow-hidden transition-all duration-300 flex flex-col">
+                            <div class="relative h-52 overflow-hidden bg-black">
+                                <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80"
+                                    onerror="this.src='https://placehold.co/600x400/252525/c57b43?text=Project+01'"
+                                    alt="Project 1"
+                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500">
+                                <span
+                                    class="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-[10px] uppercase tracking-widest px-2.5 py-1 rounded text-accent">01
+                                    / Photo</span>
+                            </div>
+                            <div class="p-5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h3 data-i18n="proj1_title"
+                                        class="text-base font-medium text-white group-hover:text-accent transition-colors">
+                                        Silent Shadows</h3>
+                                    <p data-i18n="proj1_desc" class="text-xs text-white/60 mt-1 leading-relaxed">
+                                        Architectural black & white portrait series shot in Paris.</p>
+                                </div>
+                                <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer"
+                                    class="inline-flex items-center justify-between mt-4 px-4 py-2 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent text-accent hover:text-white text-xs font-medium tracking-wide transition-all duration-300 group/btn shadow-sm hover:shadow-accent/20">
+                                    <span data-i18n="proj_explore">دخول المشروع ←</span>
+                                    <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1"
+                                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Project Card 2 -->
+                        <div
+                            class="group bg-cardBg/80 border border-white/5 hover:border-accent/50 rounded-lg overflow-hidden transition-all duration-300 flex flex-col">
+                            <div class="relative h-52 overflow-hidden bg-black">
+                                <img src="https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=600&q=80"
+                                    onerror="this.src='https://placehold.co/600x400/252525/c57b43?text=Project+02'"
+                                    alt="Project 2"
+                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500">
+                                <span
+                                    class="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-[10px] uppercase tracking-widest px-2.5 py-1 rounded text-accent">02
+                                    / Branding</span>
+                            </div>
+                            <div class="p-5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h3 data-i18n="proj2_title"
+                                        class="text-base font-medium text-white group-hover:text-accent transition-colors">
+                                        Noir Studio Identity</h3>
+                                    <p data-i18n="proj2_desc" class="text-xs text-white/60 mt-1 leading-relaxed">
+                                        Minimalist editorial typography and packaging system.</p>
+                                </div>
+                                <a href="https://behance.net" target="_blank" rel="noopener noreferrer"
+                                    class="inline-flex items-center justify-between mt-4 px-4 py-2 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent text-accent hover:text-white text-xs font-medium tracking-wide transition-all duration-300 group/btn shadow-sm hover:shadow-accent/20">
+                                    <span data-i18n="proj_explore">دخول المشروع ←</span>
+                                    <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1"
+                                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Project Card 3 -->
+                        <div
+                            class="group bg-cardBg/80 border border-white/5 hover:border-accent/50 rounded-lg overflow-hidden transition-all duration-300 flex flex-col">
+                            <div class="relative h-52 overflow-hidden bg-black">
+                                <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80"
+                                    onerror="this.src='https://placehold.co/600x400/252525/c57b43?text=Project+03'"
+                                    alt="Project 3"
+                                    class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500">
+                                <span
+                                    class="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-[10px] uppercase tracking-widest px-2.5 py-1 rounded text-accent">03
+                                    / Editorial</span>
+                            </div>
+                            <div class="p-5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h3 data-i18n="proj3_title"
+                                        class="text-base font-medium text-white group-hover:text-accent transition-colors">
+                                        Vogue Monochrome</h3>
+                                    <p data-i18n="proj3_desc" class="text-xs text-white/60 mt-1 leading-relaxed">
+                                        High-contrast studio portraits and magazine layout direction.</p>
+                                </div>
+                                <a href="https://dribbble.com" target="_blank" rel="noopener noreferrer"
+                                    class="inline-flex items-center justify-between mt-4 px-4 py-2 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent text-accent hover:text-white text-xs font-medium tracking-wide transition-all duration-300 group/btn shadow-sm hover:shadow-accent/20">
+                                    <span data-i18n="proj_explore">دخول المشروع ←</span>
+                                    <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1"
+                                        fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Navigation Helper -->
+                <div class="flex items-center justify-between pt-4 mt-4 border-t border-white/10 pr-6">
+                    <button onclick="switchPage(0)"
+                        class="text-xs text-white/60 hover:text-white flex items-center gap-2 transition-colors">
+                        <span>←</span> <span data-i18n="back_home">Back to profile</span>
+                    </button>
+                    <button onclick="switchPage(2)" class="text-xs text-accent hover:underline flex items-center gap-2">
+                        <span data-i18n="next_jobs">View experience & jobs</span> <span>→</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ==================== PAGE 3: JOBS / EXPERIENCE & SERVICES ==================== -->
+            <section id="page-2"
+                class="page-section flex flex-col justify-between px-8 sm:px-16 md:px-28 lg:px-36 py-8 h-full custom-scroll overflow-y-auto">
+                <div class="my-auto">
+                    <!-- Page 3 Header (Aligned above the grid) -->
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-[2px] h-10 bg-accent"></div>
+                        <div>
+                            <h2 data-i18n="page3_title"
+                                class="text-2xl sm:text-3xl font-light text-white tracking-wide">Experience & Jobs
+                            </h2>
+                            <p data-i18n="page3_subtitle" class="text-xs sm:text-sm text-white/50 font-light">
+                                Professional career timeline & creative roles</p>
+                        </div>
+                    </div>
+
+                    <!-- Two-column Equal Height Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pr-6 items-stretch">
+
+                        <!-- Left Column: 3 Career Timeline Rectangles -->
+                        <div class="md:col-span-7 flex flex-col justify-between gap-4 h-full">
+                            <!-- Job Item 1 -->
+                            <div
+                                class="p-4 rounded-xl bg-cardBg/70 border border-white/5 hover:border-white/15 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2 flex-1">
+                                <div>
+                                    <span class="text-[11px] text-accent font-mono">2023 — PRESENT</span>
+                                    <h3 data-i18n="job1_role" class="text-sm sm:text-base font-medium text-white">Senior
+                                        Art Director & Photographer</h3>
+                                    <p data-i18n="job1_company" class="text-xs text-white/50">Atelier Lumière — Paris,
+                                        France</p>
+                                </div>
+                                <span data-i18n="job_tag_full"
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-accent/40 text-accent">Full-time</span>
+                            </div>
+
+                            <!-- Job Item 2 -->
+                            <div
+                                class="p-4 rounded-xl bg-cardBg/70 border border-white/5 hover:border-white/15 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2 flex-1">
+                                <div>
+                                    <span class="text-[11px] text-white/40 font-mono">2020 — 2023</span>
+                                    <h3 data-i18n="job2_role" class="text-sm sm:text-base font-medium text-white">Lead
+                                        Graphic & Brand Designer</h3>
+                                    <p data-i18n="job2_company" class="text-xs text-white/50">Monolith Creative Agency —
+                                        Berlin</p>
+                                </div>
+                                <span data-i18n="job_tag_contract"
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">Contract</span>
+                            </div>
+
+                            <!-- Job Item 3 -->
+                            <div
+                                class="p-4 rounded-xl bg-cardBg/70 border border-white/5 hover:border-white/15 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2 flex-1">
+                                <div>
+                                    <span class="text-[11px] text-white/40 font-mono">2018 — 2020</span>
+                                    <h3 data-i18n="job3_role" class="text-sm sm:text-base font-medium text-white">
+                                        Freelance Portrait Photographer</h3>
+                                    <p data-i18n="job3_company" class="text-xs text-white/50">Independent Commissions —
+                                        Worldwide</p>
+                                </div>
+                                <span data-i18n="job_tag_freelance"
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">Freelance</span>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Availability & Direct Commission Card (Equal height!) -->
+                        <div
+                            class="md:col-span-5 bg-cardBg/90 border border-white/10 rounded-xl p-6 flex flex-col justify-between h-full">
+                            <div>
+                                <div class="flex items-center gap-2.5 mb-3">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span data-i18n="avail_badge"
+                                        class="text-xs uppercase tracking-widest text-emerald-400 font-medium">Available
+                                        for
+                                        Freelance</span>
+                                </div>
+                                <h3 data-i18n="hire_title" class="text-xl font-light text-white mb-2">Commission a
+                                    Project
+                                </h3>
+                                <p data-i18n="hire_desc" class="text-xs text-white/60 leading-relaxed mb-5">
+                                    Open for editorial photography sessions, visual identity design, and art direction
+                                    consultations worldwide.
+                                </p>
+
+                                <!-- Skills Pills -->
+                                <div class="flex flex-wrap gap-2 mb-6">
+                                    <span
+                                        class="text-[11px] px-3 py-1 rounded-full bg-white/5 text-white/80 border border-white/10">Editorial
+                                        Photography</span>
+                                    <span
+                                        class="text-[11px] px-3 py-1 rounded-full bg-white/5 text-white/80 border border-white/10">Brand
+                                        Identity</span>
+                                    <span
+                                        class="text-[11px] px-3 py-1 rounded-full bg-white/5 text-white/80 border border-white/10">Art
+                                        Direction</span>
+                                    <span
+                                        class="text-[11px] px-3 py-1 rounded-full bg-white/5 text-white/80 border border-white/10">Print
+                                        & Layout</span>
+                                </div>
+                            </div>
+
+                            <!-- Transparent Send Job Inquiry Button (styled like home page contact button) -->
+                            <button onclick="toggleContactModal()"
+                                class="w-full py-3 rounded-full border border-accent bg-transparent hover:bg-accent text-white/95 hover:text-white text-xs sm:text-sm tracking-wider font-medium transition-all duration-300 shadow-sm hover:shadow-accent/20">
+                                <span data-i18n="btn_start_project">Send Job Inquiry</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Bar -->
+                <div class="flex items-center justify-between pt-4 mt-4 border-t border-white/10 pr-4">
+                    <button onclick="switchPage(1)"
+                        class="text-xs text-white/60 hover:text-white flex items-center gap-2 transition-colors">
+                        <span>←</span> <span data-i18n="back_projects">Back to projects</span>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <!-- Instagram Account ID Box (Matched to copyright size) -->
+                        <a href="https://instagram.com/ti.1k" target="_blank" rel="noopener noreferrer"
+                            title="Instagram: @ti.1k"
+                            class="group flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/10 hover:border-accent bg-white/[0.02] hover:bg-white/[0.06] text-white/30 hover:text-white transition-all text-[11px] tracking-wider leading-none">
+                            <svg class="w-3 h-3 text-accent group-hover:scale-110 transition-transform"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                            </svg>
+                            <span class="font-mono text-[11px]">ti.1k</span>
+                        </a>
+
+                        <!-- Snapchat Account ID Box -->
+                        <a href="https://www.snapchat.com/add/lzr4r" target="_blank" rel="noopener noreferrer"
+                            title="Snapchat: @lzr4r"
+                            class="group flex items-center gap-1.5 px-2 py-0.5 rounded border border-white/10 hover:border-accent bg-white/[0.02] hover:bg-white/[0.06] text-white/30 hover:text-white transition-all text-[11px] tracking-wider leading-none">
+                            <svg class="w-3 h-3 text-accent group-hover:scale-110 transition-transform"
+                                fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12.296.002c-3.723 0-6.217 2.47-6.217 6.046 0 1.258.484 2.56 1.054 3.518.232.39.117.653-.25.864-.67.387-1.745.83-2.614 1.716-.623.633-.618 1.488-.13 1.956.702.673 2.155.772 2.87.828.324.025.474.223.474.47 0 .86-.013 1.24-.047 1.472-.087.59-.444.896-.928 1.155-.732.392-1.762.668-2.678 1.127-.75.376-.893 1.026-.467 1.637.383.548 1.144.873 2.054.873 1.04 0 2.222-.44 3.037-1.196.34-.316.643-.377.954-.18 1.002.633 2.19.98 3.424.98 1.218 0 2.396-.34 3.391-.967.319-.202.628-.142.97.172.82.753 2.007 1.192 3.053 1.192.909 0 1.67-.325 2.053-.873.426-.611.284-1.261-.466-1.637-.916-.46-1.947-.735-2.679-1.127-.484-.26-.84-.565-.928-1.155-.034-.233-.047-.613-.047-1.472 0-.247.15-.445.474-.47.715-.056 2.168-.155 2.87-.828.488-.468.493-1.323-.13-1.956-.87-.886-1.944-1.33-2.614-1.716-.367-.211-.482-.474-.25-.864.57-.958 1.054-2.26 1.054-3.518C18.513 2.472 16.02 0 12.296 0z" />
+                            </svg>
+                            <span class="font-mono text-[11px]">lzr4r</span>
+                        </a>
+
+                        <!-- Copyright -->
+                        <span class="text-[11px] text-white/30">3asm © 2026</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================= MOBILE "MORE" MENU MODAL ================= -->
+        <div id="mobile-menu"
+            class="fixed inset-0 z-50 md:hidden bg-darkBg/95 backdrop-blur-2xl opacity-0 pointer-events-none transition-all duration-300 flex flex-col justify-between p-6 sm:p-8">
+            <div id="mobile-menu-content"
+                class="w-full max-w-sm mx-auto flex flex-col justify-between h-full transform transition-transform duration-300 -translate-y-4">
+
+                <!-- Menu Top Bar: Brand + Close Button -->
+                <div class="flex items-center justify-between pb-6 border-b border-white/10">
+                    <a href="#home" onclick="switchPage(0); toggleMobileMenu(true); return false;"
+                        class="font-serif italic text-2xl tracking-wide text-white hover:text-accent transition-colors">
+                        3asm
+                    </a>
+                    <button onclick="toggleMobileMenu(true)" aria-label="Close"
+                        class="w-9 h-9 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 hover:border-accent flex items-center justify-center text-white/80 hover:text-white transition-all active:scale-90">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Menu Body: Page Links -->
+                <div class="flex flex-col gap-3 my-auto py-6">
+                    <p data-i18n="menu_title" class="text-[11px] uppercase tracking-widest text-white/40 mb-1 px-1">
+                        Navigation</p>
+
+                    <!-- 01: Home / الرئيسية -->
+                    <button onclick="switchPage(0); toggleMobileMenu(true);" id="mobile-nav-0"
+                        class="mobile-nav-item flex items-center justify-between px-4 py-3.5 rounded-xl border border-transparent bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/15 transition-all text-left group">
+                        <span class="flex items-center gap-3">
+                            <span
+                                class="mobile-nav-num text-xs font-mono text-white/40 group-hover:text-accent transition-colors">01</span>
+                            <span data-i18n="nav_home"
+                                class="mobile-nav-label text-base font-light tracking-wide text-white">home</span>
+                        </span>
+                        <span class="mobile-nav-dot w-2 h-2 rounded-full bg-accent opacity-0 transition-opacity"></span>
+                    </button>
+
+                    <!-- 02: Creatives / الأعمال الإبداعية -->
+                    <button onclick="switchPage(1); toggleMobileMenu(true);" id="mobile-nav-1"
+                        class="mobile-nav-item flex items-center justify-between px-4 py-3.5 rounded-xl border border-transparent bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/15 transition-all text-left group">
+                        <span class="flex items-center gap-3">
+                            <span
+                                class="mobile-nav-num text-xs font-mono text-white/40 group-hover:text-accent transition-colors">02</span>
+                            <span data-i18n="nav_creatives"
+                                class="mobile-nav-label text-base font-light tracking-wide text-white">creatives</span>
+                        </span>
+                        <span class="mobile-nav-dot w-2 h-2 rounded-full bg-accent opacity-0 transition-opacity"></span>
+                    </button>
+
+                    <!-- 03: Jobs / الخبرات والوظائف -->
+                    <button onclick="switchPage(2); toggleMobileMenu(true);" id="mobile-nav-2"
+                        class="mobile-nav-item flex items-center justify-between px-4 py-3.5 rounded-xl border border-transparent bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/15 transition-all text-left group">
+                        <span class="flex items-center gap-3">
+                            <span
+                                class="mobile-nav-num text-xs font-mono text-white/40 group-hover:text-accent transition-colors">03</span>
+                            <span data-i18n="nav_jobs"
+                                class="mobile-nav-label text-base font-light tracking-wide text-white">jobs</span>
+                        </span>
+                        <span class="mobile-nav-dot w-2 h-2 rounded-full bg-accent opacity-0 transition-opacity"></span>
+                    </button>
+                </div>
+
+                <!-- Menu Bottom: Contact & Language Action Buttons -->
+                <div class="flex flex-col gap-3 pt-4 border-t border-white/10">
+                    <!-- زر تواصل معي (Contact Me Button) -->
+                    <button onclick="toggleMobileMenu(true); toggleContactModal();"
+                        class="w-full py-3 px-5 rounded-full border border-accent bg-accent/20 hover:bg-accent text-white flex items-center justify-center gap-2.5 text-xs sm:text-sm tracking-wider font-medium transition-all duration-300 shadow-lg shadow-accent/15 active:scale-95">
+                        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="1.8"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span data-i18n="btn_contact">contact</span>
+                    </button>
+
+                    <!-- زر تغيير اللغة (Language Switcher Button) -->
+                    <button onclick="toggleLanguage()"
+                        class="w-full py-2.5 px-5 rounded-full border border-white/20 hover:border-accent bg-white/5 hover:bg-accent/10 text-white/85 hover:text-white flex items-center justify-between text-xs tracking-wider transition-all duration-300 active:scale-95">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="1.8"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                            </svg>
+                            <span data-i18n="btn_language">Change Language</span>
+                        </div>
+                        <span id="mobile-lang-badge"
+                            class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-semibold text-accent border border-white/10">AR</span>
+                    </button>
+
+                    <span class="text-[11px] text-white/30 text-center block pt-1">3asm © 2026</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= CONTACT / QUICK MESSAGE MODAL ================= -->
+        <div id="contact-modal"
+            class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+            <div
+                class="bg-cardBg border border-white/15 rounded-xl max-w-md w-full p-6 sm:p-8 text-white shadow-2xl relative animate-fadeIn">
+                <button onclick="toggleContactModal()"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-white/70 hover:text-white transition-colors">
+                    ✕
+                </button>
+                <h3 data-i18n="modal_title" class="text-xl font-light tracking-wide mb-1">Get in Touch</h3>
+                <p data-i18n="modal_sub" class="text-xs text-white/50 mb-5">Send a direct message to mutasim</p>
+
+                <form onsubmit="handleContactSubmit(event)" class="space-y-3.5">
+                    <div>
+                        <label data-i18n="form_name"
+                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">Your Name</label>
+                        <input type="text" required
+                            class="w-full bg-darkBg border border-white/15 focus:border-accent rounded-lg px-3.5 py-2 text-sm text-white outline-none transition-colors"
+                            placeholder="Alex Mercer">
+                    </div>
+                    <div>
+                        <label data-i18n="form_email"
+                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">Email Address</label>
+                        <input type="email" required
+                            class="w-full bg-darkBg border border-white/15 focus:border-accent rounded-lg px-3.5 py-2 text-sm text-white outline-none transition-colors"
+                            placeholder="alex@studio.com">
+                    </div>
+                    <div>
+                        <label data-i18n="form_msg"
+                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">Message</label>
+                        <textarea rows="3" required
+                            class="w-full bg-darkBg border border-white/15 focus:border-accent rounded-lg px-3.5 py-2 text-sm text-white outline-none transition-colors"
+                            placeholder="Tell me about your project..."></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full py-2.5 rounded-full bg-accent hover:bg-accentHover text-white text-xs uppercase tracking-widest font-medium transition-all">
+                        <span data-i18n="form_send">Send Message</span>
+                    </button>
+                </form>
+
+                <!-- Feedback Toast inside modal -->
+                <div id="form-success"
+                    class="hidden mt-4 p-3 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs text-center">
+                    <span data-i18n="form_thanks">Thank you! Your message has been sent successfully.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= DOUBLE SCROLL CONFIRMATION TOAST ================= -->
+        <div id="scroll-confirm-toast"
+            class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-none opacity-0 translate-y-2 transition-all duration-300 bg-cardBg/95 backdrop-blur-md border border-accent/50 text-white/90 px-4 py-2 rounded-full text-xs tracking-wider flex items-center gap-2.5 shadow-xl">
+            <span class="w-2 h-2 rounded-full bg-accent animate-ping"></span>
+            <span id="scroll-confirm-text">Scroll again to confirm</span>
+        </div>
+
+    </main>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Current State
+        let currentPage = 0;
+        let currentLang = 'en';
+
+        // Dictionary for Complete Bilingual Translation (English / Arabic)
+        const translations = {
+            en: {
+                nav_home: "home",
+                nav_creatives: "creatives",
+                nav_jobs: "jobs",
+                hero_name: "mutasim",
+                hero_role: "programmer / psychologist",
+                btn_contact: "contact",
+                view_projects: "view projects",
+                page2_title: "Selected Works",
+                page2_subtitle: "Visual storytelling, brand identity & monochrome photography",
+                proj1_title: "Silent Shadows",
+                proj1_desc: "Architectural black & white portrait series shot in Paris.",
+                proj2_title: "Noir Studio Identity",
+                proj2_desc: "Minimalist editorial typography and packaging system.",
+                proj3_title: "Vogue Monochrome",
+                proj3_desc: "High-contrast studio portraits and magazine layout direction.",
+                proj_explore: "View Project →",
+                back_home: "Back to profile",
+                next_jobs: "View experience & jobs",
+                page3_title: "Experience & Jobs",
+                page3_subtitle: "Professional career timeline & creative roles",
+                job1_role: "Senior Art Director & Photographer",
+                job1_company: "Atelier Lumière — Paris, France",
+                job2_role: "Lead Graphic & Brand Designer",
+                job2_company: "Monolith Creative Agency — Berlin",
+                job3_role: "Freelance Portrait Photographer",
+                job3_company: "Independent Commissions — Worldwide",
+                job_tag_full: "Full-time",
+                job_tag_contract: "Contract",
+                job_tag_freelance: "Freelance",
+                avail_badge: "Available for Freelance",
+                hire_title: "Commission a Project",
+                hire_desc: "Open for editorial photography sessions, visual identity design, and art direction consultations worldwide.",
+                btn_start_project: "Send Job Inquiry",
+                back_projects: "Back to projects",
+                modal_title: "Get in Touch",
+                modal_sub: "Send a direct message to mutasim",
+                form_name: "Your Name",
+                form_email: "Email Address",
+                form_msg: "Message",
+                form_send: "Send Message",
+                form_thanks: "Thank you! Your message has been sent successfully.",
+                scroll_confirm_down: "Scroll down again to confirm ↓",
+                scroll_confirm_up: "Scroll up again to confirm ↑",
+                nav_more: "More",
+                btn_language: "Change Language",
+                menu_title: "Navigation"
+            },
+            ar: {
+                nav_home: "الرئيسية",
+                nav_creatives: "الأعمال الإبداعية",
+                nav_jobs: "الخبرات والوظائف",
+                hero_name: "معـــتصم",
+                hero_role: "مبرمج و أخصائي نفسي",
+                btn_contact: "تواصل معي",
+                view_projects: "عرض المشاريع",
+                page2_title: "مختارات من أعمالي",
+                page2_subtitle: "السرد البصري، الهوية التجارية والتصوير الأحادي اللون",
+                proj1_title: "ظلال صامتة",
+                proj1_desc: "سلسلة صور شخصية ومعمارية بالأبيض والأسود تم تصويرها في باريس.",
+                proj2_title: "هوية استوديو نوار",
+                proj2_desc: "تصميم خطوط تحريرية минималиست ونظام تغليف متكامل.",
+                proj3_title: "فوغ مونوكروم",
+                proj3_desc: "جلسات تصوير استوديو عالية التباين وإخراج فني للمجلات.",
+                proj_explore: "دخول المشروع ←",
+                back_home: "العودة للملف الشخصي",
+                next_jobs: "عرض الخبرات والوظائف",
+                page3_title: "الخبرات والوظائف",
+                page3_subtitle: "المسيرة المهنية والأدوار الإبداعية",
+                job1_role: "مديرة فنية أولى ومصورة فوتوغرافية",
+                job1_company: "أتيليه لوميير — باريس، فرنسا",
+                job2_role: "مصممة جرافيك وهويات بصرية رئيسية",
+                job2_company: "وكالة مونوليث الإبداعية — برلين",
+                job3_role: "مصورة بورتريه مستقلة",
+                job3_company: "مشاريع حرة — حول العالم",
+                job_tag_full: "دوام كامل",
+                job_tag_contract: "عقد عمل",
+                job_tag_freelance: "عمل حر",
+                avail_badge: "متاحة للمشاريع الحرة",
+                hire_title: "اطلب مشروعاً خاصاً",
+                hire_desc: "متاحة لجلسات التصوير التحريري، وتصميم الهويات البصرية، والاستشارات الفنية حول العالم.",
+                btn_start_project: "إرسال طلب عمل",
+                back_projects: "العودة للمشاريع",
+                modal_title: "تواصل معي",
+                modal_sub: "أرسل رسالة مباشرة إلى معـــتصم",
+                form_name: "الاسم الكامل",
+                form_email: "البريد الإلكتروني",
+                form_msg: "الرسالة",
+                form_send: "إرسال الرسالة",
+                form_thanks: "شكراً لك! تم إرسال رسالتك بنجاح.",
+                scroll_confirm_down: "مرر للأسفل مرة أخرى للتأكيد ↓",
+                scroll_confirm_up: "مرر للأعلى مرة أخرى للتأكيد ↑",
+                nav_more: "المزيد",
+                btn_language: "تغيير اللغة",
+                menu_title: "التنقل"
+            }
+        };
+
+        /**
+         * Switches between the 3 pages (0: Home, 1: Creatives, 2: Jobs)
+         * Triggered by both the right-side rectangular bars and the top navigation links.
+         */
+        function switchPage(pageIndex) {
+            currentPage = pageIndex;
+
+            // Update Page Sections
+            for (let i = 0; i < 3; i++) {
+                const section = document.getElementById(`page-${i}`);
+                const bar = document.getElementById(`bar-${i}`);
+                const navBtn = document.getElementById(`nav-${i}`);
+                const navInd = navBtn ? navBtn.querySelector('.nav-indicator') : null;
+
+                if (i === pageIndex) {
+                    if (section) section.classList.add('active');
+                    // Highlight right-side rectangle indicator in orange
+                    if (bar) bar.className = "block w-[3px] h-7 rounded-full transition-all duration-300 bg-accent scale-y-110";
+                    // Highlight top nav item
+                    if (navBtn) {
+                        navBtn.classList.remove('text-white/60');
+                        navBtn.classList.add('text-white');
+                    }
+                    if (navInd) {
+                        navInd.classList.remove('opacity-0', 'scale-x-0');
+                        navInd.classList.add('opacity-100', 'scale-x-100');
+                    }
+                } else {
+                    if (section) section.classList.remove('active');
+                    // Reset right-side rectangle indicator
+                    if (bar) bar.className = "block w-[2px] h-7 rounded-full transition-all duration-300 bg-white/35 group-hover:bg-white/70";
+                    // Reset top nav item
+                    if (navBtn) {
+                        navBtn.classList.remove('text-white');
+                        navBtn.classList.add('text-white/60');
+                    }
+                    if (navInd) {
+                        navInd.classList.remove('opacity-100', 'scale-x-100');
+                        navInd.classList.add('opacity-0', 'scale-x-0');
+                    }
+                }
+
+                // Sync Mobile Menu items active state
+                const mBtn = document.getElementById(`mobile-nav-${i}`);
+                if (mBtn) {
+                    const dot = mBtn.querySelector('.mobile-nav-dot');
+                    const num = mBtn.querySelector('.mobile-nav-num');
+                    const label = mBtn.querySelector('.mobile-nav-label');
+                    if (i === pageIndex) {
+                        mBtn.classList.add('bg-accent/15', 'border-accent/40');
+                        mBtn.classList.remove('bg-white/[0.03]', 'border-transparent');
+                        if (dot) dot.classList.replace('opacity-0', 'opacity-100');
+                        if (num) { num.classList.add('text-accent'); num.classList.remove('text-white/40'); }
+                        if (label) { label.classList.add('text-accent', 'font-medium'); label.classList.remove('text-white'); }
+                    } else {
+                        mBtn.classList.remove('bg-accent/15', 'border-accent/40');
+                        mBtn.classList.add('bg-white/[0.03]', 'border-transparent');
+                        if (dot) dot.classList.replace('opacity-100', 'opacity-0');
+                        if (num) { num.classList.remove('text-accent'); num.classList.add('text-white/40'); }
+                        if (label) { label.classList.remove('text-accent', 'font-medium'); label.classList.add('text-white'); }
+                    }
+                }
+            }
+        }
+
+        /**
+         * Toggles website language between English (LTR) and Arabic (RTL)
+         */
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            const htmlEl = document.documentElement;
+            const badge = document.getElementById('lang-badge');
+            const mobileBadge = document.getElementById('mobile-lang-badge');
+
+            // Update badge labels to show the other language option
+            const targetBadgeText = currentLang === 'en' ? 'AR' : 'EN';
+            if (badge) badge.textContent = targetBadgeText;
+            if (mobileBadge) mobileBadge.textContent = targetBadgeText;
+
+            // Keep layout aesthetics intact while updating text content
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+
+            // Switch font family for optimal Arabic typography
+            if (currentLang === 'ar') {
+                document.body.style.fontFamily = "'Cairo', sans-serif";
+            } else {
+                document.body.style.fontFamily = "'Inter', sans-serif";
+            }
+
+            // Re-render dynamic Firebase projects if loaded
+            if (typeof renderDynamicProjects === 'function') {
+                renderDynamicProjects();
+            }
+        }
+
+        /**
+         * Opens / Closes the Mobile "More" Menu
+         */
+        function toggleMobileMenu(forceClose = false) {
+            const menu = document.getElementById('mobile-menu');
+            const content = document.getElementById('mobile-menu-content');
+            if (!menu) return;
+
+            const isOpen = !menu.classList.contains('pointer-events-none');
+
+            if (isOpen || forceClose) {
+                // Close
+                menu.classList.add('pointer-events-none', 'opacity-0');
+                menu.classList.remove('pointer-events-auto', 'opacity-100');
+                if (content) {
+                    content.classList.add('-translate-y-4');
+                    content.classList.remove('translate-y-0');
+                }
+            } else {
+                // Open
+                menu.classList.remove('pointer-events-none', 'opacity-0');
+                menu.classList.add('pointer-events-auto', 'opacity-100');
+                if (content) {
+                    content.classList.remove('-translate-y-4');
+                    content.classList.add('translate-y-0');
+                }
+            }
+        }
+
+        /**
+         * Opens / Closes the Contact Modal
+         */
+        function toggleContactModal() {
+            const modal = document.getElementById('contact-modal');
+            const successAlert = document.getElementById('form-success');
+            successAlert.classList.add('hidden');
+
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        /**
+         * Handles Contact Form Submission without page reload
+         */
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            const successAlert = document.getElementById('form-success');
+            successAlert.classList.remove('hidden');
+            event.target.reset();
+            setTimeout(() => {
+                toggleContactModal();
+            }, 1800);
+        }
+
+        // ================= DOUBLE-SCROLL / SWIPE CONFIRMATION LOGIC =================
+        let pendingDirection = null; // 'down' or 'up'
+        let confirmTimeout = null;
+        let isLocked = false;
+
+        function showScrollToast(dir) {
+            const toast = document.getElementById('scroll-confirm-toast');
+            const textEl = document.getElementById('scroll-confirm-text');
+            textEl.textContent = dir === 'down'
+                ? translations[currentLang].scroll_confirm_down
+                : translations[currentLang].scroll_confirm_up;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+        }
+
+        function hideScrollToast() {
+            const toast = document.getElementById('scroll-confirm-toast');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-2');
+        }
+
+        function handleDirectionalStep(dir) {
+            const modalOpen = !document.getElementById('contact-modal').classList.contains('hidden');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuOpen = mobileMenu && !mobileMenu.classList.contains('pointer-events-none');
+            if (modalOpen || mobileMenuOpen || isLocked) return;
+
+            if (pendingDirection === dir) {
+                // Second scroll in the same direction -> Confirm & switch page
+                clearTimeout(confirmTimeout);
+                pendingDirection = null;
+                hideScrollToast();
+                isLocked = true;
+
+                if (dir === 'down') {
+                    switchPage((currentPage + 1) % 3);
+                } else {
+                    switchPage((currentPage - 1 + 3) % 3);
+                }
+
+                setTimeout(() => { isLocked = false; }, 750);
+            } else {
+                // First scroll -> Ask for second confirmation scroll
+                pendingDirection = dir;
+                showScrollToast(dir);
+
+                // Brief lock so a single long trackpad inertia gesture doesn't count as two separate scrolls
+                isLocked = true;
+                setTimeout(() => { isLocked = false; }, 320);
+
+                clearTimeout(confirmTimeout);
+                confirmTimeout = setTimeout(() => {
+                    pendingDirection = null;
+                    hideScrollToast();
+                }, 1800);
+            }
+        }
+
+        // Keyboard Arrow navigation & Escape key handling
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                toggleMobileMenu(true);
+                const modal = document.getElementById('contact-modal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    toggleContactModal();
+                }
+                return;
+            }
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                handleDirectionalStep('down');
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                handleDirectionalStep('up');
+            }
+        });
+
+        // Mouse Wheel Navigation (with 2-step confirmation)
+        window.addEventListener('wheel', (e) => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu && !mobileMenu.classList.contains('pointer-events-none')) return;
+
+            const activeSection = document.getElementById(`page-${currentPage}`);
+            // Check if inner scrollable content (on mobile/tablet) hasn't reached boundary yet
+            if (activeSection && activeSection.scrollHeight > activeSection.clientHeight) {
+                const atTop = activeSection.scrollTop <= 2;
+                const atBottom = Math.ceil(activeSection.scrollTop + activeSection.clientHeight) >= activeSection.scrollHeight - 2;
+                if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) {
+                    return;
+                }
+            }
+
+            if (Math.abs(e.deltaY) > 30) {
+                handleDirectionalStep(e.deltaY > 0 ? 'down' : 'up');
+            }
+        }, { passive: true });
+
+        // Mobile Touch Swipe Navigation (with 2-step confirmation)
+        let touchStartY = 0;
+        window.addEventListener('touchstart', (e) => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu && !mobileMenu.classList.contains('pointer-events-none')) return;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaY = touchStartY - touchEndY;
+
+            const activeSection = document.getElementById(`page-${currentPage}`);
+            if (activeSection && activeSection.scrollHeight > activeSection.clientHeight) {
+                const atTop = activeSection.scrollTop <= 2;
+                const atBottom = Math.ceil(activeSection.scrollTop + activeSection.clientHeight) >= activeSection.scrollHeight - 2;
+                if ((deltaY > 0 && !atBottom) || (deltaY < 0 && !atTop)) {
+                    return;
+                }
+            }
+
+            if (Math.abs(deltaY) > 45) {
+                handleDirectionalStep(deltaY > 0 ? 'down' : 'up');
+            }
+        }, { passive: true });
+
+        // Instant pre-hydration from local cache so there is 0ms delay or layout shift
+        (function prehydrateLocalData() {
+            try {
+                const raw = localStorage.getItem('portfolio_cached_data') || localStorage.getItem('orbit_studio_backup');
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    if (data && data.page1) {
+                        const p1 = data.page1;
+                        if (p1.name_ar) translations.ar.hero_name = p1.name_ar;
+                        if (p1.name_en) translations.en.hero_name = p1.name_en;
+                        if (p1.role_ar) translations.ar.hero_role = p1.role_ar;
+                        if (p1.role_en) translations.en.hero_role = p1.role_en;
+                        if (p1.btn_contact_ar) translations.ar.btn_contact = p1.btn_contact_ar;
+                        if (p1.btn_contact_en) translations.en.btn_contact = p1.btn_contact_en;
+                        if (p1.view_projects_ar) translations.ar.view_projects = p1.view_projects_ar;
+                        if (p1.view_projects_en) translations.en.view_projects = p1.view_projects_en;
+                    }
+                }
+            } catch (e) { }
+        })();
+
+        // Initialize Page 0 on load to match the first orange rectangle on the right
+        window.onload = () => {
+            switchPage(0);
+        };
+    </script>
+
+    <!-- Firebase Realtime Database Dynamic Content Sync -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGweaizMqsiPNXwmVyuk7N96JIQP_UGgU",
+            authDomain: "new1-9f048.firebaseapp.com",
+            databaseURL: "https://new1-9f048-default-rtdb.firebaseio.com",
+            projectId: "new1-9f048",
+            storageBucket: "new1-9f048.firebasestorage.app",
+            messagingSenderId: "1055568035335",
+            appId: "1:1055568035335:web:16ebe1adc33ba868d3b4a2",
+            measurementId: "G-CSMBXW33NX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const portfolioRef = ref(db, 'portfolio');
+
+        window.dynamicPortfolioData = null;
+
+        window.renderDynamicProjects = function () {
+            if (!window.dynamicPortfolioData || !window.dynamicPortfolioData.projects) return;
+            const grid = document.getElementById('projects-grid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+            window.dynamicPortfolioData.projects.forEach((proj, idx) => {
+                const title = currentLang === 'ar' ? (proj.title_ar || proj.title_en) : (proj.title_en || proj.title_ar);
+                const desc = currentLang === 'ar' ? (proj.desc_ar || proj.desc_en) : (proj.desc_en || proj.desc_ar);
+                const btnText = currentLang === 'ar' ? (proj.btn_text_ar || 'دخول المشروع ←') : (proj.btn_text_en || 'View Project →');
+                const badge = proj.badge || `0${idx + 1} / Project`;
+                const link = proj.link || '#';
+                const image = proj.image || 'https://placehold.co/600x400/252525/c57b43?text=Project';
+
+                const card = document.createElement('div');
+                card.className = "group bg-cardBg/80 border border-white/5 hover:border-accent/50 rounded-lg overflow-hidden transition-all duration-300 flex flex-col";
+                card.innerHTML = `
+                    <div class="relative h-52 overflow-hidden bg-black">
+                        <img src="${image}"
+                            onerror="this.src='https://placehold.co/600x400/252525/c57b43?text=Project+0${idx + 1}'"
+                            alt="${title}"
+                            class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500">
+                        <span
+                            class="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-[10px] uppercase tracking-widest px-2.5 py-1 rounded text-accent">${badge}</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-medium text-white group-hover:text-accent transition-colors">
+                                ${title}</h3>
+                            <p class="text-xs text-white/60 mt-1 leading-relaxed">
+                                ${desc}</p>
+                        </div>
+                        <a href="${link}" target="_blank" rel="noopener noreferrer"
+                            class="inline-flex items-center justify-between mt-4 px-4 py-2 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent text-accent hover:text-white text-xs font-medium tracking-wide transition-all duration-300 group/btn shadow-sm hover:shadow-accent/20">
+                            <span>${btnText}</span>
+                            <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1"
+                                fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        };
+
+        // Real-time synchronization listener for all 3 pages
+        try {
+            onValue(portfolioRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                // Keep local cache up-to-date for instant loading next time
+                try {
+                    localStorage.setItem('portfolio_cached_data', JSON.stringify(data));
+                } catch (e) { }
+
+                // Sync Page 1 (Home / Hero)
+                const p1 = data.page1;
+                if (p1) {
+                    const heroImg = document.getElementById('hero-portrait-img');
+                    if (heroImg) {
+                        if (p1.hero_image) {
+                            const currentApplied = heroImg.dataset.appliedSrc || heroImg.getAttribute('src');
+                            if (currentApplied !== p1.hero_image && !(currentApplied.endsWith('hero-portrait.jpg') && p1.hero_image.endsWith('hero-portrait.jpg'))) {
+                                heroImg.src = p1.hero_image;
+                                heroImg.dataset.appliedSrc = p1.hero_image;
+                            }
+                            try { localStorage.setItem('portfolio_hero_image', p1.hero_image); } catch (e) { }
+                        }
+                        if (p1.hero_color_mode) {
+                            try { localStorage.setItem('portfolio_hero_color_mode', p1.hero_color_mode); } catch (e) { }
+                            if (p1.hero_color_mode === 'color') {
+                                heroImg.classList.remove('grayscale');
+                                heroImg.classList.add('grayscale-0');
+                            } else {
+                                heroImg.classList.remove('grayscale-0');
+                                heroImg.classList.add('grayscale');
+                            }
+                        }
+                    }
+                    if (p1.name_ar) translations.ar.hero_name = p1.name_ar;
+                    if (p1.name_en) translations.en.hero_name = p1.name_en;
+                    if (p1.role_ar) translations.ar.hero_role = p1.role_ar;
+                    if (p1.role_en) translations.en.hero_role = p1.role_en;
+                    if (p1.btn_contact_ar) translations.ar.btn_contact = p1.btn_contact_ar;
+                    if (p1.btn_contact_en) translations.en.btn_contact = p1.btn_contact_en;
+                    if (p1.view_projects_ar) translations.ar.view_projects = p1.view_projects_ar;
+                    if (p1.view_projects_en) translations.en.view_projects = p1.view_projects_en;
+                }
+
+                // Sync Page 2 (Selected Works / Projects)
+                const p2 = data.page2 || data;
+                const p2Section = p2.section || p2;
+                if (p2Section.title_ar) translations.ar.page2_title = p2Section.title_ar;
+                if (p2Section.title_en) translations.en.page2_title = p2Section.title_en;
+                if (p2Section.subtitle_ar) translations.ar.page2_subtitle = p2Section.subtitle_ar;
+                if (p2Section.subtitle_en) translations.en.page2_subtitle = p2Section.subtitle_en;
+
+                const projList = p2.projects || data.projects;
+                if (projList && Array.isArray(projList)) {
+                    window.dynamicPortfolioData = { projects: projList };
+                    window.renderDynamicProjects();
+                }
+
+                // Sync Page 3 (Experience, Jobs & Socials)
+                const p3 = data.page3;
+                if (p3) {
+                    if (p3.title_ar) translations.ar.page3_title = p3.title_ar;
+                    if (p3.title_en) translations.en.page3_title = p3.title_en;
+                    if (p3.subtitle_ar) translations.ar.page3_subtitle = p3.subtitle_ar;
+                    if (p3.subtitle_en) translations.en.page3_subtitle = p3.subtitle_en;
+
+                    if (p3.jobs && Array.isArray(p3.jobs)) {
+                        p3.jobs.forEach((j, i) => {
+                            const idx = i + 1;
+                            if (j.role_ar) translations.ar[`job${idx}_role`] = j.role_ar;
+                            if (j.role_en) translations.en[`job${idx}_role`] = j.role_en;
+                            if (j.company_ar) translations.ar[`job${idx}_company`] = j.company_ar;
+                            if (j.company_en) translations.en[`job${idx}_company`] = j.company_en;
+                        });
+                    }
+
+                    if (p3.hire) {
+                        if (p3.hire.avail_ar) translations.ar.avail_badge = p3.hire.avail_ar;
+                        if (p3.hire.avail_en) translations.en.avail_badge = p3.hire.avail_en;
+                        if (p3.hire.title_ar) translations.ar.hire_title = p3.hire.title_ar;
+                        if (p3.hire.title_en) translations.en.hire_title = p3.hire.title_en;
+                        if (p3.hire.desc_ar) translations.ar.hire_desc = p3.hire.desc_ar;
+                        if (p3.hire.desc_en) translations.en.hire_desc = p3.hire.desc_en;
+                        if (p3.hire.btn_ar) translations.ar.btn_start_project = p3.hire.btn_ar;
+                        if (p3.hire.btn_en) translations.en.btn_start_project = p3.hire.btn_en;
+                    }
+
+                    if (p3.social) {
+                        if (p3.social.instagram) {
+                            const instaLink = document.querySelector('a[href*="instagram.com"]');
+                            if (instaLink) {
+                                instaLink.href = `https://instagram.com/${p3.social.instagram}`;
+                                const span = instaLink.querySelector('span');
+                                if (span) span.textContent = p3.social.instagram;
+                            }
+                        }
+                        if (p3.social.snapchat) {
+                            const snapLink = document.querySelector('a[href*="snapchat.com"]');
+                            if (snapLink) {
+                                snapLink.href = `https://www.snapchat.com/add/${p3.social.snapchat}`;
+                                const span = snapLink.querySelector('span');
+                                if (span) span.textContent = p3.social.snapchat;
+                            }
+                        }
+                    }
+                }
+
+                // Apply updated translations to DOM elements
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (translations[currentLang] && translations[currentLang][key]) {
+                        el.textContent = translations[currentLang][key];
+                    }
+                });
+            });
+        } catch (err) {
+            console.warn("Firebase sync notice:", err);
+        }
+    </script>
+</body>
+
+</html>

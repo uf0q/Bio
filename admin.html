@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Orbit Studio | لوحة التحكم الذكية</title>
+    <!-- Google Fonts: Cairo, Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cropper.js CSS & JS for Interactive Image Cropping -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        orbitDeep: '#05070b',
+                        orbitDark: '#0b0d13',
+                        orbitFrame: '#0f121a',
+                        orbitCard: '#131722',
+                        orbitCardInner: '#171c2a',
+                        orbitBlueGlow: '#3b82f6',
+                        orbitCyan: '#38bdf8',
+                        orbitBorder: 'rgba(255, 255, 255, 0.08)',
+                        orbitBorderHover: 'rgba(255, 255, 255, 0.16)'
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', 'Inter', sans-serif;
+            background-color: #05070b;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow in Background - Ultra Smooth & GPU-Optimized */
+        .ambient-glow-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-glow-1 {
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 500px;
+            max-width: 80vw;
+            height: 500px;
+            max-height: 80vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.18) 0%, rgba(30, 58, 138, 0.08) 40%, rgba(15, 23, 42, 0) 70%);
+            pointer-events: none;
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            bottom: 10%;
+            right: 15%;
+            width: 450px;
+            max-width: 75vw;
+            height: 450px;
+            max-height: 75vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.14) 0%, rgba(14, 165, 233, 0.05) 45%, rgba(15, 23, 42, 0) 70%);
+            pointer-events: none;
+        }
+
+        /* Luxury Glass Frame */
+        .glass-master-frame {
+            background: rgba(11, 13, 19, 0.88);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.85),
+                0 0 50px -10px rgba(37, 99, 235, 0.12),
+                inset 0 1px 1px rgba(255, 255, 255, 0.12);
+        }
+
+        /* Nested Glass Cards */
+        .glass-card {
+            background: rgba(19, 23, 34, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.14);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Inputs */
+        .glass-input {
+            background: rgba(14, 17, 25, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            transition: all 0.2s ease;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: #38bdf8;
+            background: rgba(18, 22, 33, 0.95);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+        }
+
+        /* Top Pill Nav Indicator */
+        .nav-pill-btn.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e2638;
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+
+        /* Bottom Floating Widget */
+        .floating-widget {
+            background: rgba(18, 22, 33, 0.88);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.12);
+        }
+
+        /* Mobile specific bottom safe area */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .mobile-bottom-nav {
+                padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+            }
+        }
+
+        /* Cropper.js Luxury Dark Orbit Theme */
+        .cropper-view-box {
+            outline: 2px solid #38bdf8 !important;
+            outline-color: rgba(56, 189, 248, 0.95) !important;
+            border-radius: 4px;
+        }
+
+        .cropper-line {
+            background-color: #38bdf8 !important;
+            opacity: 0.6;
+        }
+
+        .cropper-point {
+            background-color: #38bdf8 !important;
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 2px;
+        }
+
+        .cropper-point.point-se {
+            width: 14px !important;
+            height: 14px !important;
+            border-radius: 3px;
+            background-color: #60a5fa !important;
+        }
+
+        .cropper-bg {
+            background-image: none !important;
+            background-color: #06080d !important;
+        }
+
+        .cropper-modal {
+            background-color: rgba(0, 0, 0, 0.75) !important;
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen relative flex items-center justify-center p-2 sm:p-5 lg:p-8">
+
+    <!-- Ambient Glow Orbs -->
+    <div class="ambient-glow-wrapper">
+        <div class="ambient-glow-1"></div>
+        <div class="ambient-glow-2"></div>
+    </div>
+
+    <!-- Toast Notification Box -->
+    <div id="toast"
+        class="fixed top-6 left-1/2 -translate-x-1/2 z-50 transform -translate-y-20 opacity-0 pointer-events-none transition-all duration-300">
+        <div id="toast-box"
+            class="flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-xs sm:text-sm font-semibold border bg-orbitDark text-white border-white/10 backdrop-blur-2xl">
+            <span id="toast-icon"
+                class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+            <span id="toast-msg">تم الحفظ بنجاح</span>
+        </div>
+    </div>
+
+    <!-- ================= MASTER DASHBOARD FRAME ================= -->
+    <div
+        class="glass-master-frame w-full max-w-7xl rounded-[28px] overflow-hidden flex flex-col relative z-10 my-auto min-h-[92vh] pb-24 md:pb-0">
+
+        <!-- ================= TOP NAVIGATION BAR (Exact image match) ================= -->
+        <header class="h-16 px-6 border-b border-white/[0.08] flex items-center justify-between select-none">
+            <!-- Left Logo: 3D Cube Icon -->
+            <div class="flex items-center gap-3.5">
+                <a href="folio_3asm.html" target="_blank" class="flex items-center gap-2.5 group">
+                    <div
+                        class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-200/90 to-slate-400/50 flex items-center justify-center shadow-md shadow-white/5 border border-white/20 group-hover:scale-105 transition-transform">
+                        <!-- 3D Cube SVG -->
+                        <svg class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12.378 1.602a.75.75 0 0 0-.756 0L3.122 6.554a.75.75 0 0 0-.372.648v9.9a.75.75 0 0 0 .372.648l8.5 4.95a.75.75 0 0 0 .756 0l8.5-4.95a.75.75 0 0 0 .372-.648v-9.9a.75.75 0 0 0-.372-.648l-8.5-4.952ZM12 3.018l7.218 4.204-2.88 1.677-7.218-4.204L12 3.018ZM3.987 8.163l7.263 4.23v7.947l-7.263-4.23V8.163Zm8.763 12.177v-7.948l7.263-4.23v7.947l-7.263 4.231Z" />
+                        </svg>
+                    </div>
+                    <div class="hidden sm:flex flex-col">
+                        <span class="text-sm font-bold tracking-wider text-white">3ASM STUDIO</span>
+                        <span class="text-[10px] text-white/40 font-mono">WORKSPACE</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Center: Floating Pill Navigation Tabs (Desk & Tablet) -->
+            <nav
+                class="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/[0.08] shadow-inner text-xs">
+                <button onclick="switchPageTab('page1')" id="nav-btn-page1"
+                    class="nav-pill-btn active px-4 py-1.5 rounded-full text-white/70 hover:text-white transition-all font-medium flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-orbitCyan"></span>
+                    <span>الرئيسية (01)</span>
+                </button>
+
+                <button onclick="switchPageTab('page2')" id="nav-btn-page2"
+                    class="nav-pill-btn px-4 py-1.5 rounded-full text-white/70 hover:text-white transition-all font-medium flex items-center gap-1.5">
+                    <span>المشاريع (02)</span>
+                    <span id="nav-proj-badge"
+                        class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-white/10 text-white/70">3</span>
+                </button>
+
+                <button onclick="switchPageTab('page3')" id="nav-btn-page3"
+                    class="nav-pill-btn px-4 py-1.5 rounded-full text-white/70 hover:text-white transition-all font-medium flex items-center gap-1.5">
+                    <span>الخبرات والوظائف (03)</span>
+                </button>
+
+                <a href="folio_3asm.html" target="_blank"
+                    class="px-3.5 py-1.5 rounded-full text-white/40 hover:text-white transition-all font-medium flex items-center gap-1">
+                    <span>معاينة الموقع</span>
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </nav>
+
+            <!-- Right Actions: Notifications & Avatar & Save Button -->
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <!-- Live Firebase Dot -->
+                <div
+                    class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-400 font-mono">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="top-sync-status">Firebase Live</span>
+                </div>
+
+                <!-- Notifications Bell with Red Badge -->
+                <button
+                    class="relative w-8 h-8 rounded-full border border-white/10 hover:border-white/25 bg-white/[0.03] flex items-center justify-center text-white/70 hover:text-white transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-orbitDark"></span>
+                </button>
+
+                <!-- User Badge -->
+                <div
+                    class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white font-bold text-xs flex items-center justify-center border border-white/20 shadow-sm">
+                    3A
+                </div>
+
+                <!-- Save Button (Desktop) -->
+                <button onclick="saveAllMasterData()" id="btn-save-master"
+                    class="hidden md:flex items-center gap-2 px-4 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white text-xs font-bold shadow-lg shadow-blue-600/30 active:scale-95 transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>حفظ التعديلات</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ================= MAIN INNER BODY (Sidebar + Dashboard Grid) ================= -->
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+
+            <!-- ================= LEFT NESTED SIDEBAR (Desktop) ================= -->
+            <aside
+                class="w-full md:w-72 lg:w-80 border-b md:border-b-0 md:border-l border-white/[0.08] p-5 flex flex-col gap-5 overflow-y-auto shrink-0 select-none hidden md:flex">
+
+                <!-- 1. Tasks / Projects Card (Exact image match) -->
+                <div class="glass-card rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between text-xs font-bold text-white">
+                        <div class="flex items-center gap-2">
+                            <span>المشاريع</span>
+                            <span id="sidebar-task-count"
+                                class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/10 text-white/60">3</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-white/40">
+                            <button onclick="addNewProject()" title="إضافة مشروع"
+                                class="hover:text-white p-1">+</button>
+                            <button class="hover:text-white p-1">•••</button>
+                        </div>
+                    </div>
+
+                    <!-- Checklist / Project Items -->
+                    <div id="sidebar-projects-list" class="space-y-1.5">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- 2. Recent Activity Card (Exact image match) -->
+                <div class="glass-card rounded-2xl p-4 space-y-3">
+                    <div class="text-xs font-bold text-white">النشاط الأخير</div>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-2.5">
+                            <div
+                                class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-white/50">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-medium text-white/90">تم تحديث الصور</span>
+                                <span class="text-[10px] text-white/40">منذ دقائق في Firebase</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-2.5">
+                            <div
+                                class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-white/50">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-medium text-white/90">مزامنة تلقائية نشطة</span>
+                                <span class="text-[10px] text-white/40">Realtime Listener OK</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Quick Access (3 Square Glass Buttons - Exact image match) -->
+                <div class="space-y-2">
+                    <span class="text-[11px] font-medium text-white/40 px-1 block">وصول سريع</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <!-- Button 1 -->
+                        <button onclick="switchPageTab('page1')"
+                            class="glass-card rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 hover:border-orbitCyan/40 group transition-all">
+                            <svg class="w-4 h-4 text-white/60 group-hover:text-orbitCyan transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span class="text-[10px] text-white/70">الرئيسية</span>
+                        </button>
+
+                        <!-- Button 2 -->
+                        <button onclick="switchPageTab('page2')"
+                            class="glass-card rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 hover:border-orbitCyan/40 group transition-all">
+                            <svg class="w-4 h-4 text-white/60 group-hover:text-orbitCyan transition-colors" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            <span class="text-[10px] text-white/70">المشاريع</span>
+                        </button>
+
+                        <!-- Button 3 -->
+                        <button onclick="saveAllMasterData()"
+                            class="glass-card rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 hover:border-emerald-400/40 group transition-all">
+                            <svg class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                            </svg>
+                            <span class="text-[10px] text-emerald-400 font-semibold">حفظ</span>
+                        </button>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- ================= RIGHT MAIN WORKSPACE ================= -->
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto max-h-[calc(92vh-4rem)]">
+
+                <!-- Header Title + Action Button (Exact image match) -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
+                            <span id="workspace-header-title">نظرة عامة وإدارة المحتوى</span>
+                        </h1>
+                        <p class="text-xs text-white/40 mt-0.5">تعديل الصور، النصوص، الروابط، وتفاصيل موقعك في أي وقت
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <!-- Add Project Button -->
+                        <button onclick="addNewProject()"
+                            class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-white text-xs font-medium transition-all shadow-sm">
+                            <span class="text-orbitCyan font-bold">+</span>
+                            <span>إضافة مشروع</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= 3 METRICS CARDS WITH NEON WAVES (Exact image match) ================= -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Metric 1: Wave chart -->
+                    <div class="glass-card rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-xs text-white/50">
+                            <span>المشاريع النشطة</span>
+                            <span class="text-white/30 font-mono">•••</span>
+                        </div>
+                        <div class="mt-2 text-2xl font-extrabold text-white font-mono" id="stat-active-projects">3</div>
+                        <!-- Neon Wave SVG Graph -->
+                        <div class="h-12 w-full mt-2 relative">
+                            <svg class="w-full h-full overflow-visible" viewBox="0 0 100 35" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35" />
+                                        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0" />
+                                    </linearGradient>
+                                </defs>
+                                <path d="M0,28 Q15,10 30,22 T60,12 T90,20 L100,8 L100,35 L0,35 Z"
+                                    fill="url(#waveGrad)" />
+                                <path d="M0,28 Q15,10 30,22 T60,12 T90,20 L100,8" fill="none" stroke="#38bdf8"
+                                    stroke-width="2" />
+                            </svg>
+                        </div>
+                        <div
+                            class="flex justify-between text-[9px] text-white/30 font-mono mt-1 pt-1 border-t border-white/5">
+                            <span>01 Photo</span><span>02 Brand</span><span>03 Edit</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2: Bar chart -->
+                    <div class="glass-card rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-xs text-white/50">
+                            <span>حالة المزامنة السحابية</span>
+                            <span class="text-white/30 font-mono">•••</span>
+                        </div>
+                        <div class="mt-2 text-xl font-bold text-white font-mono">Firebase RTDB</div>
+                        <!-- Bar chart columns SVG -->
+                        <div class="h-12 w-full mt-2 flex items-end justify-between gap-1.5 px-2">
+                            <div class="w-2.5 bg-white/10 rounded-t h-4"></div>
+                            <div class="w-2.5 bg-white/15 rounded-t h-7"></div>
+                            <div class="w-2.5 bg-white/20 rounded-t h-5"></div>
+                            <div class="w-2.5 bg-white/25 rounded-t h-9"></div>
+                            <div class="w-2.5 bg-sky-400 rounded-t h-11 shadow-lg shadow-sky-400/40"></div>
+                            <div class="w-2.5 bg-white/15 rounded-t h-6"></div>
+                        </div>
+                        <div
+                            class="flex justify-between text-[9px] text-white/30 font-mono mt-1 pt-1 border-t border-white/5">
+                            <span>متصل</span><span>لحظي</span><span>مباشر</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3: Donut circle progress ring (Exact image match) -->
+                    <div class="glass-card rounded-2xl p-4 relative overflow-hidden flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-xs text-white/50">
+                            <span>اكتمال البيانات</span>
+                            <span class="text-white/30 font-mono">•••</span>
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <div>
+                                <span class="text-2xl font-extrabold text-white font-mono">100%</span>
+                                <span class="block text-[11px] text-emerald-400">جميع الحقول جاهزة</span>
+                            </div>
+                            <!-- Circular SVG -->
+                            <div class="relative w-12 h-12 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3.5" />
+                                    <path
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="#38bdf8" stroke-dasharray="95, 100" stroke-width="3.5"
+                                        stroke-linecap="round" />
+                                </svg>
+                                <span class="absolute text-[10px] font-mono font-bold text-white">95%</span>
+                            </div>
+                        </div>
+                        <div class="text-[10px] text-white/30 font-mono mt-1 pt-1 border-t border-white/5">
+                            Auto-sync enabled
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= TAB PANELS CONTAINER ================= -->
+
+                <!-- ==================== TAB 1: HERO / HOME (01) ==================== -->
+                <div id="panel-page1" class="space-y-5">
+                    <!-- Image Card -->
+                    <div class="glass-card rounded-2xl p-5 lg:p-6 space-y-5">
+                        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                                <h3 class="text-sm font-bold text-white">صورة الصفحة الرئيسية (Hero Portrait)</h3>
+                            </div>
+                            <span class="text-[11px] font-mono text-white/40">Page 1 Image & Style</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                            <!-- Preview (4 cols) -->
+                            <div class="md:col-span-4 space-y-2">
+                                <div id="hero-preview-wrapper" ondblclick="openHeroCropper()"
+                                    class="relative h-64 rounded-xl overflow-hidden bg-black/80 border border-white/10 group shadow-inner cursor-pointer select-none"
+                                    title="انقر مرتين (Double Click) على الصورة لقصها">
+                                    <img id="p1-hero-preview" src="hero-portrait.jpg"
+                                        onerror="this.src='hero-portrait.jpg'"
+                                        class="w-full h-full object-cover object-top grayscale transition-all duration-500 group-hover:scale-105"
+                                        alt="Hero Portrait">
+
+                                    <!-- Hover Crop Overlay Prompt -->
+                                    <div
+                                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-3 text-center pointer-events-none">
+                                        <div
+                                            class="w-11 h-11 rounded-2xl bg-sky-500/90 text-white flex items-center justify-center text-xl mb-1.5 shadow-xl shadow-sky-500/40 backdrop-blur-md transform -translate-y-1 group-hover:translate-y-0 transition-transform">
+                                            ✂️
+                                        </div>
+                                        <span class="text-xs font-bold text-white drop-shadow">انقر مرتين للقص</span>
+                                        <span class="text-[10px] text-sky-200/90 font-mono">Double-Click to Crop</span>
+                                    </div>
+
+                                    <!-- Quick Action Button in Corner -->
+                                    <button type="button" onclick="event.stopPropagation(); openHeroCropper()"
+                                        class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-black/80 hover:bg-sky-500 text-white border border-white/20 hover:border-sky-400 text-[11px] font-medium backdrop-blur-md transition-all flex items-center gap-1.5 shadow-lg active:scale-95 z-10"
+                                        title="أداة قص وتعديل الصورة">
+                                        <span>✂️</span>
+                                        <span>قص الصورة</span>
+                                    </button>
+
+                                    <!-- Color Mode Badge -->
+                                    <span id="p1-preview-mode-badge"
+                                        class="absolute bottom-2.5 left-2.5 px-2.5 py-0.5 rounded text-[10px] font-mono bg-black/85 text-sky-400 border border-white/10 backdrop-blur-sm z-10">
+                                        أبيض وأسود 🌓
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] px-1">
+                                    <span class="text-sky-400/90 flex items-center gap-1 font-medium">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                                        </svg>
+                                        انقر مرتين (Double Click) لقص الصورة
+                                    </span>
+                                    <span class="text-white/40 text-[10px]">مباشر ولحظي</span>
+                                </div>
+                            </div>
+
+                            <!-- Controls (8 cols) -->
+                            <div class="md:col-span-8 space-y-4">
+                                <!-- 1. Color Mode Selector (أبيض وأسود أم بالألوان الطبيعية) -->
+                                <div class="space-y-1.5 p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.07]">
+                                    <label class="block text-xs font-bold text-sky-400 flex items-center gap-1.5">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                                        </svg>
+                                        <span>نمط عرض ألوان الصورة (Color Mode)</span>
+                                    </label>
+                                    <p class="text-[11px] text-white/50 mb-2">اختر إذا كنت تفضل عرض الصورة بألوانها
+                                        الطبيعية الأصلية أو بنمط الأبيض والأسود كما هي حالياً:</p>
+
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <!-- Grayscale Option Button -->
+                                        <button type="button" onclick="setHeroColorMode('grayscale')"
+                                            id="btn-mode-grayscale"
+                                            class="flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-sky-400/50 bg-sky-500/15 text-white font-semibold text-xs transition-all shadow-sm">
+                                            <span>🌓</span>
+                                            <span>أبيض وأسود (الحالي)</span>
+                                        </button>
+
+                                        <!-- Full Color Option Button -->
+                                        <button type="button" onclick="setHeroColorMode('color')" id="btn-mode-color"
+                                            class="flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-white/60 hover:text-white font-semibold text-xs transition-all">
+                                            <span>🎨</span>
+                                            <span>بالألوان الطبيعية</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 2. Image Selection & URL -->
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-semibold text-white/80">رابط الصورة (Image URL) أو
+                                        تحديد ملف</label>
+
+                                    <div class="flex gap-2">
+                                        <input type="url" id="p1-hero-img-input"
+                                            oninput="handleHeroImageInput(this.value)" placeholder="https://..."
+                                            class="flex-1 glass-input rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono"
+                                            dir="ltr">
+
+                                        <!-- Local file upload trigger -->
+                                        <input type="file" id="p1-hero-file-picker" accept="image/*" class="hidden"
+                                            onchange="handleHeroFileSelected(event)">
+                                        <button type="button"
+                                            onclick="document.getElementById('p1-hero-file-picker').click()"
+                                            class="px-3.5 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-sky-400 text-xs text-white flex items-center gap-1.5 shrink-0 transition-all"
+                                            title="اختيار صورة من جهازك">
+                                            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                            </svg>
+                                            <span class="hidden sm:inline">من جهازك</span>
+                                        </button>
+                                    </div>
+                                    <span class="text-[11px] text-white/40 block">
+                                        يمكنك لصق أي رابط صورة مباشر، أو الضغط على «من جهازك» لاختيار صورة من
+                                        جهازك/هاتفك.
+                                    </span>
+                                </div>
+
+                                <!-- Quick Presets -->
+                                <div class="pt-2 border-t border-white/5 flex flex-wrap gap-2 items-center text-xs">
+                                    <span class="text-[11px] text-white/40">نماذج سريعة:</span>
+                                    <button type="button" onclick="setHeroPreset('hero-portrait.jpg')"
+                                        class="px-2.5 py-1 rounded-lg border border-white/10 hover:border-white/20 bg-white/[0.02] text-[11px] text-white/60 hover:text-white transition-all">
+                                        الصورة المعتمدة
+                                    </button>
+                                    <button type="button"
+                                        onclick="setHeroPreset('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=750&q=80')"
+                                        class="px-2.5 py-1 rounded-lg border border-white/10 hover:border-white/20 bg-white/[0.02] text-[11px] text-white/60 hover:text-white transition-all">
+                                        بورتريه احترافي 1
+                                    </button>
+                                    <button type="button"
+                                        onclick="setHeroPreset('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=750&q=80')"
+                                        class="px-2.5 py-1 rounded-lg border border-white/10 hover:border-white/20 bg-white/[0.02] text-[11px] text-white/60 hover:text-white transition-all">
+                                        بورتريه احترافي 2
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Texts Card -->
+                    <div class="glass-card rounded-2xl p-5 lg:p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                <h3 class="text-sm font-bold text-white">نصوص وأزرار الصفحة الرئيسية</h3>
+                            </div>
+                            <span class="text-[11px] font-mono text-white/40">Page 1 Texts</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1">الاسم المعروض (عربي)</label>
+                                <input type="text" id="p1-name-ar" placeholder="معـــتصم"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white">
+                            </div>
+                            <div dir="ltr">
+                                <label class="block text-xs text-white/70 mb-1 text-left">Display Name (English)</label>
+                                <input type="text" id="p1-name-en" placeholder="mutasim"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white text-left">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1">المسمى المهني (عربي)</label>
+                                <input type="text" id="p1-role-ar" placeholder="مبرمج و أخصائي نفسي"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white">
+                            </div>
+                            <div dir="ltr">
+                                <label class="block text-xs text-white/70 mb-1 text-left">Professional Role
+                                    (English)</label>
+                                <input type="text" id="p1-role-en" placeholder="programmer / psychologist"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white text-left">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1">نص زر التواصل</label>
+                                <input type="text" id="p1-btn-contact-ar" placeholder="تواصل معي"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white">
+                            </div>
+                            <div dir="ltr">
+                                <label class="block text-xs text-white/70 mb-1 text-left">Contact Button (EN)</label>
+                                <input type="text" id="p1-btn-contact-en" placeholder="contact"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white text-left">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== TAB 2: PROJECTS / WORKS (02) ==================== -->
+                <div id="panel-page2" class="space-y-5 hidden">
+                    <!-- Header Section texts -->
+                    <div class="glass-card rounded-2xl p-5 lg:p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                                <h3 class="text-sm font-bold text-white">ترويسة قسم «مختارات من أعمالي»</h3>
+                            </div>
+                            <span class="text-[11px] font-mono text-white/40">Section 2 Header</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1">العنوان بالعربية</label>
+                                <input type="text" id="p2-title-ar" placeholder="مختارات من أعمالي"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white">
+                            </div>
+                            <div dir="ltr">
+                                <label class="block text-xs text-white/70 mb-1 text-left">Title (English)</label>
+                                <input type="text" id="p2-title-en" placeholder="Selected Works"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white text-left">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1">الوصف الفرعي بالعربية</label>
+                                <textarea id="p2-subtitle-ar" rows="2" placeholder="السرد البصري، الهوية التجارية..."
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white resize-none"></textarea>
+                            </div>
+                            <div dir="ltr">
+                                <label class="block text-xs text-white/70 mb-1 text-left">Subtitle (English)</label>
+                                <textarea id="p2-subtitle-en" rows="2"
+                                    placeholder="Visual storytelling, brand identity..."
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white resize-none text-left"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projects Dynamic Cards -->
+                    <div id="projects-workspace-container" class="space-y-4">
+                        <!-- Injected via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- ==================== TAB 3: JOBS & EXPERIENCE (03) ==================== -->
+                <div id="panel-page3" class="space-y-5 hidden">
+                    <!-- Page 3 Header -->
+                    <div class="glass-card rounded-2xl p-5 lg:p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                                <h3 class="text-sm font-bold text-white">ترويسة صفحة الخبرات</h3>
+                            </div>
+                            <span class="text-[11px] font-mono text-white/40">Section 3 Header</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1">العنوان بالعربية</label>
+                                <input type="text" id="p3-title-ar" placeholder="الخبرات والوظائف"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white">
+                            </div>
+                            <div dir="ltr">
+                                <label class="block text-xs text-white/70 mb-1 text-left">Title (English)</label>
+                                <input type="text" id="p3-title-en" placeholder="Experience & Jobs"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white text-left">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-white/70 mb-1">الوصف الفرعي</label>
+                                <input type="text" id="p3-subtitle-ar" placeholder="المسيرة المهنية والأدوار الإبداعية"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white">
+                            </div>
+                            <div dir="ltr">
+                                <label class="block text-xs text-white/70 mb-1 text-left">Subtitle (English)</label>
+                                <input type="text" id="p3-subtitle-en" placeholder="Professional career timeline"
+                                    class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white text-left">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Career Timeline Items -->
+                    <div class="glass-card rounded-2xl p-5 lg:p-6 space-y-4">
+                        <h3 class="text-sm font-bold text-white border-b border-white/[0.06] pb-3">بطاقات المسيرة
+                            المهنية (Career Timeline)</h3>
+                        <div id="jobs-workspace-container" class="space-y-4">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Commission Card & Socials -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="glass-card rounded-2xl p-5 space-y-3">
+                            <h4 class="text-xs font-bold text-white border-b border-white/[0.06] pb-2">بطاقة «اطلب
+                                مشروعاً خاصاً»</h4>
+                            <div>
+                                <label class="block text-[11px] text-white/60 mb-1">شارة الحالة</label>
+                                <input type="text" id="p3-hire-avail" placeholder="متاحة للمشاريع الحرة"
+                                    class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-white/60 mb-1">عنوان البطاقة</label>
+                                <input type="text" id="p3-hire-title" placeholder="اطلب مشروعاً خاصاً"
+                                    class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-white/60 mb-1">الوصف</label>
+                                <textarea id="p3-hire-desc" rows="2"
+                                    class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-5 space-y-3">
+                            <h4 class="text-xs font-bold text-white border-b border-white/[0.06] pb-2">حسابات التواصل في
+                                أسفل الموقع</h4>
+                            <div>
+                                <label class="block text-[11px] text-white/60 mb-1">إنستجرام ID</label>
+                                <input type="text" id="p3-insta-id" placeholder="ti.1k"
+                                    class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                                    dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-white/60 mb-1">سناب شات ID</label>
+                                <input type="text" id="p3-snap-id" placeholder="lzr4r"
+                                    class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white font-mono"
+                                    dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-white/60 mb-1">حقوق النشر</label>
+                                <input type="text" id="p3-copyright" placeholder="3asm © 2026"
+                                    class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <!-- ================= FLOATING FROSTED PENDING TASKS WIDGET (Exact image match) ================= -->
+        <div class="hidden lg:block absolute bottom-6 left-6 w-72 floating-widget rounded-2xl p-4 select-none z-20">
+            <div class="flex items-center justify-between text-xs font-bold text-white mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                    <span>حالة النشر والمزامنة</span>
+                </div>
+                <span class="text-white/40 text-xs">•••</span>
+            </div>
+
+            <div class="space-y-2 text-xs">
+                <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/5 flex items-center justify-between">
+                    <div class="flex flex-col">
+                        <span class="font-medium text-white/90">مزامنة الصور والنصوص</span>
+                        <span class="text-[10px] text-white/40">Realtime Firebase Sync</span>
+                    </div>
+                    <span
+                        class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">✓</span>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/5 flex items-center justify-between">
+                    <div class="flex flex-col">
+                        <span class="font-medium text-white/90">حفظ سريع فوري</span>
+                        <span class="text-[10px] text-white/40">اختصار: Ctrl + S</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/10 text-white/70">OK</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= MOBILE APP-LIKE BOTTOM NAVIGATION BAR (Easier & Different on Mobile!) ================= -->
+    <nav
+        class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-[#0b0d14]/95 backdrop-blur-2xl border-t border-white/10 px-4 py-2.5 flex items-center justify-around mobile-bottom-nav">
+        <!-- Tab 1 -->
+        <button onclick="switchPageTab('page1')" id="mob-tab-page1"
+            class="flex flex-col items-center gap-1 text-sky-400 group">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 group-hover:bg-white/10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+            </div>
+            <span class="text-[10px] font-semibold">الرئيسية</span>
+        </button>
+
+        <!-- Tab 2 -->
+        <button onclick="switchPageTab('page2')" id="mob-tab-page2"
+            class="flex flex-col items-center gap-1 text-white/40 group">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 group-hover:bg-white/10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+            <span class="text-[10px] font-semibold">المشاريع</span>
+        </button>
+
+        <!-- Tab 3 -->
+        <button onclick="switchPageTab('page3')" id="mob-tab-page3"
+            class="flex flex-col items-center gap-1 text-white/40 group">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 group-hover:bg-white/10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <span class="text-[10px] font-semibold">الخبرات</span>
+        </button>
+
+        <!-- Save Button (Mobile Prominent) -->
+        <button onclick="saveAllMasterData()" class="flex flex-col items-center gap-1 text-white group">
+            <div
+                class="w-10 h-10 -mt-3 rounded-full flex items-center justify-center bg-gradient-to-tr from-blue-600 to-sky-400 shadow-lg shadow-sky-500/40 border border-white/20 active:scale-90 transition-transform">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <span class="text-[10px] font-bold text-sky-400">حفظ الآن</span>
+        </button>
+    </nav>
+
+    <!-- ================= HERO PORTRAIT CROP MODAL (Double-Click Triggered) ================= -->
+    <div id="hero-crop-modal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md hidden select-none transition-all duration-300">
+        <div
+            class="relative w-full max-w-2xl bg-[#0d1017] border border-white/15 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh] animate-in fade-in zoom-in-95 duration-200">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-white/[0.02]">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-9 h-9 rounded-xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-sky-400 text-base shadow-sm">
+                        ✂️
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span>قص وتعديل صورة الواجهة (Hero Portrait)</span>
+                            <span
+                                class="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">Double
+                                Click</span>
+                        </h3>
+                        <p class="text-[11px] text-white/50">اسحب الإطار لتحديد الجزء المناسب، ثم احفظ التعديل</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeHeroCropper()"
+                    class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white flex items-center justify-center text-sm transition-colors"
+                    title="إغلاق">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Cropper Canvas Container -->
+            <div class="relative bg-black/95 flex items-center justify-center overflow-hidden p-2"
+                style="height: min(50vh, 420px);">
+                <img id="cropper-target-img" src="" alt="Hero Image to Crop" class="max-h-full max-w-full block"
+                    crossorigin="anonymous">
+            </div>
+
+            <!-- Cropper Controls & Toolbar -->
+            <div class="p-3.5 border-t border-white/10 bg-[#121622] space-y-3">
+                <!-- 1. Aspect Ratio Presets -->
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <span class="text-[11px] text-white/50 font-semibold flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                        نسبة الأبعاد:
+                    </span>
+                    <div class="flex flex-wrap gap-1.5" id="crop-aspect-buttons">
+                        <button type="button" onclick="setCropRatio(3/4, this)"
+                            class="crop-ratio-btn px-2.5 py-1 rounded-lg text-xs border border-sky-400/50 bg-sky-500/20 text-white font-semibold shadow-sm transition-all">
+                            بورتريه 3:4 (الأنسب)
+                        </button>
+                        <button type="button" onclick="setCropRatio(NaN, this)"
+                            class="crop-ratio-btn px-2.5 py-1 rounded-lg text-xs border border-white/10 bg-white/5 text-white/80 hover:text-white transition-all">
+                            حر (Free)
+                        </button>
+                        <button type="button" onclick="setCropRatio(1, this)"
+                            class="crop-ratio-btn px-2.5 py-1 rounded-lg text-xs border border-white/10 bg-white/5 text-white/80 hover:text-white transition-all">
+                            مربع 1:1
+                        </button>
+                        <button type="button" onclick="setCropRatio(16/9, this)"
+                            class="crop-ratio-btn px-2.5 py-1 rounded-lg text-xs border border-white/10 bg-white/5 text-white/80 hover:text-white transition-all">
+                            أفقي 16:9
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Transform Tools: Rotate, Zoom & Reset -->
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/5">
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="heroCropperInstance && heroCropperInstance.rotate(-90)"
+                            class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs flex items-center gap-1.5 transition-all"
+                            title="تدوير 90 درجة عكس عقارب الساعة">
+                            <span>↺</span>
+                            <span class="text-[11px]">تدوير لليسار</span>
+                        </button>
+                        <button type="button" onclick="heroCropperInstance && heroCropperInstance.rotate(90)"
+                            class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs flex items-center gap-1.5 transition-all"
+                            title="تدوير 90 درجة مع عقارب الساعة">
+                            <span>↻</span>
+                            <span class="text-[11px]">تدوير لليمين</span>
+                        </button>
+                        <button type="button" onclick="heroCropperInstance && heroCropperInstance.zoom(0.1)"
+                            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs flex items-center justify-center transition-all"
+                            title="تكبير">+</button>
+                        <button type="button" onclick="heroCropperInstance && heroCropperInstance.zoom(-0.1)"
+                            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-xs flex items-center justify-center transition-all"
+                            title="تصغير">-</button>
+                    </div>
+
+                    <button type="button" onclick="heroCropperInstance && heroCropperInstance.reset()"
+                        class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-[11px] transition-all">
+                        إعادة ضبط
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Footer Actions -->
+            <div class="flex items-center justify-between px-5 py-3.5 border-t border-white/10 bg-white/[0.02]">
+                <button type="button" onclick="closeHeroCropper()"
+                    class="px-4 py-2 rounded-xl text-xs font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                    إلغاء
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="applyHeroCrop(false)"
+                        class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/10 transition-all flex items-center gap-1.5">
+                        <span>قص في المعاينة فقط</span>
+                    </button>
+                    <button type="button" onclick="applyHeroCrop(true)"
+                        class="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-lg shadow-sky-500/25 transition-all flex items-center gap-1.5 active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>قص وحفظ في الموقع فوراً</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FIREBASE & APP ENGINE ================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGweaizMqsiPNXwmVyuk7N96JIQP_UGgU",
+            authDomain: "new1-9f048.firebaseapp.com",
+            databaseURL: "https://new1-9f048-default-rtdb.firebaseio.com",
+            projectId: "new1-9f048",
+            storageBucket: "new1-9f048.firebasestorage.app",
+            messagingSenderId: "1055568035335",
+            appId: "1:1055568035335:web:16ebe1adc33ba868d3b4a2",
+            measurementId: "G-CSMBXW33NX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const portfolioRef = ref(db, 'portfolio');
+
+        // Master App State
+        const defaultState = {
+            page1: {
+                hero_image: "hero-portrait.jpg",
+                hero_color_mode: "color",
+                name_ar: "معـــتصم",
+                name_en: "mutasim",
+                role_ar: "مبرمج و أخصائي نفسي",
+                role_en: "programmer / psychologist",
+                btn_contact_ar: "تواصل معي",
+                btn_contact_en: "contact"
+            },
+            page2: {
+                title_ar: "مختارات من أعمالي",
+                title_en: "Selected Works",
+                subtitle_ar: "السرد البصري، الهوية التجارية والتصوير الأحادي اللون",
+                subtitle_en: "Visual storytelling, brand identity & monochrome photography",
+                projects: [
+                    {
+                        id: 1,
+                        badge: "01 / Photo",
+                        title_ar: "ظلال صامتة",
+                        title_en: "Silent Shadows",
+                        desc_ar: "سلسلة صور شخصية ومعمارية بالأبيض والأسود تم تصويرها في باريس.",
+                        desc_en: "Architectural black & white portrait series shot in Paris.",
+                        image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80",
+                        link: "https://unsplash.com",
+                        btn_text_ar: "دخول المشروع ←",
+                        btn_text_en: "View Project →"
+                    },
+                    {
+                        id: 2,
+                        badge: "02 / Branding",
+                        title_ar: "هوية استوديو نوار",
+                        title_en: "Noir Studio Identity",
+                        desc_ar: "تصميم خطوط تحريرية مينيماليست ونظام تغليف متكامل.",
+                        desc_en: "Minimalist editorial typography and packaging system.",
+                        image: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=600&q=80",
+                        link: "https://behance.net",
+                        btn_text_ar: "دخول المشروع ←",
+                        btn_text_en: "View Project →"
+                    },
+                    {
+                        id: 3,
+                        badge: "03 / Editorial",
+                        title_ar: "فوغ مونوكروم",
+                        title_en: "Vogue Monochrome",
+                        desc_ar: "جلسات تصوير استوديو عالية التباين وإخراج فني للمجلات.",
+                        desc_en: "High-contrast studio portraits and magazine layout direction.",
+                        image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80",
+                        link: "https://dribbble.com",
+                        btn_text_ar: "دخول المشروع ←",
+                        btn_text_en: "View Project →"
+                    }
+                ]
+            },
+            page3: {
+                title_ar: "الخبرات والوظائف",
+                title_en: "Experience & Jobs",
+                subtitle_ar: "المسيرة المهنية والأدوار الإبداعية",
+                subtitle_en: "Professional career timeline & creative roles",
+                jobs: [
+                    {
+                        period: "2023 — PRESENT",
+                        role_ar: "مديرة فنية أولى ومصورة فوتوغرافية",
+                        role_en: "Senior Art Director & Photographer",
+                        company_ar: "أتيليه لوميير — باريس، فرنسا",
+                        company_en: "Atelier Lumière — Paris, France"
+                    },
+                    {
+                        period: "2020 — 2023",
+                        role_ar: "مصممة جرافيك وهويات بصرية رئيسية",
+                        role_en: "Lead Graphic & Brand Designer",
+                        company_ar: "وكالة مونوليث الإبداعية — برلين",
+                        company_en: "Monolith Creative Agency — Berlin"
+                    },
+                    {
+                        period: "2018 — 2020",
+                        role_ar: "مصورة بورتريه مستقلة",
+                        role_en: "Freelance Portrait Photographer",
+                        company_ar: "مشاريع حرة — حول العالم",
+                        company_en: "Independent Commissions — Worldwide"
+                    }
+                ],
+                hire: {
+                    avail_ar: "متاحة للمشاريع الحرة",
+                    title_ar: "اطلب مشروعاً خاصاً",
+                    desc_ar: "متاحة لجلسات التصوير التحريري، وتصميم الهويات البصرية، والاستشارات الفنية حول العالم."
+                },
+                social: {
+                    instagram: "ti.1k",
+                    snapchat: "lzr4r",
+                    copyright: "3asm © 2026"
+                }
+            }
+        };
+
+        window.appState = JSON.parse(JSON.stringify(defaultState));
+
+        // Switch Tabs (Desktop & Mobile Sync)
+        window.switchPageTab = function (tabName) {
+            ['page1', 'page2', 'page3'].forEach(name => {
+                const panel = document.getElementById(`panel-${name}`);
+                const navBtn = document.getElementById(`nav-btn-${name}`);
+                const mobTab = document.getElementById(`mob-tab-${name}`);
+
+                if (name === tabName) {
+                    if (panel) panel.classList.remove('hidden');
+                    if (navBtn) navBtn.classList.add('active');
+                    if (mobTab) {
+                        mobTab.className = "flex flex-col items-center gap-1 text-sky-400 group";
+                    }
+                } else {
+                    if (panel) panel.classList.add('hidden');
+                    if (navBtn) navBtn.classList.remove('active');
+                    if (mobTab) {
+                        mobTab.className = "flex flex-col items-center gap-1 text-white/40 group";
+                    }
+                }
+            });
+
+            const titles = {
+                page1: "الصفحة 01: الرئيسية (نص وصورة)",
+                page2: "الصفحة 02: الأعمال والمشاريع (الصور، النصوص والروابط)",
+                page3: "الصفحة 03: الخبرات والوظائف (البيانات والتواصل)"
+            };
+            const hTitle = document.getElementById('workspace-header-title');
+            if (hTitle) hTitle.textContent = titles[tabName] || "لوحة التحكم";
+        };
+
+        // Live Hero Image Update
+        window.handleHeroImageInput = function (url) {
+            if (!window.appState.page1) window.appState.page1 = {};
+            window.appState.page1.hero_image = url;
+            const img = document.getElementById('p1-hero-preview');
+            if (img && url) img.src = url;
+            try {
+                if (url) localStorage.setItem('portfolio_hero_image', url);
+            } catch (e) { }
+        };
+
+        window.setHeroPreset = function (url) {
+            const input = document.getElementById('p1-hero-img-input');
+            if (input) input.value = url;
+            handleHeroImageInput(url);
+        };
+
+        // Hero Color Mode: 'grayscale' (أبيض وأسود) vs 'color' (بالألوان الطبيعية)
+        window.setHeroColorMode = function (mode) {
+            if (!window.appState.page1) window.appState.page1 = {};
+            window.appState.page1.hero_color_mode = mode;
+            try {
+                localStorage.setItem('portfolio_hero_color_mode', mode);
+            } catch (e) { }
+
+            const btnGray = document.getElementById('btn-mode-grayscale');
+            const btnColor = document.getElementById('btn-mode-color');
+            const preview = document.getElementById('p1-hero-preview');
+            const badge = document.getElementById('p1-preview-mode-badge');
+
+            if (mode === 'color') {
+                if (btnColor) {
+                    btnColor.className = "flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-sky-400/50 bg-sky-500/15 text-white font-semibold text-xs transition-all shadow-sm";
+                }
+                if (btnGray) {
+                    btnGray.className = "flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-white/60 hover:text-white font-semibold text-xs transition-all";
+                }
+                if (preview) {
+                    preview.classList.remove('grayscale');
+                    preview.classList.add('grayscale-0');
+                }
+                if (badge) badge.textContent = "بالألوان الطبيعية 🎨";
+            } else {
+                if (btnGray) {
+                    btnGray.className = "flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-sky-400/50 bg-sky-500/15 text-white font-semibold text-xs transition-all shadow-sm";
+                }
+                if (btnColor) {
+                    btnColor.className = "flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-white/60 hover:text-white font-semibold text-xs transition-all";
+                }
+                if (preview) {
+                    preview.classList.remove('grayscale-0');
+                    preview.classList.add('grayscale');
+                }
+                if (badge) badge.textContent = "أبيض وأسود 🌓";
+            }
+        };
+
+        // Local file picker handler for hero image
+        window.handleHeroFileSelected = function (e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const dataUrl = evt.target.result;
+                const input = document.getElementById('p1-hero-img-input');
+                if (input) input.value = dataUrl;
+                handleHeroImageInput(dataUrl);
+                showToast("تم اختيار ومعاينة الصورة من جهازك بنجاح");
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // ================= HERO IMAGE CROPPING ENGINE (CROPPER.JS) =================
+        window.heroCropperInstance = null;
+        let currentCropRatio = 3 / 4;
+
+        window.openHeroCropper = function () {
+            const preview = document.getElementById('p1-hero-preview');
+            const input = document.getElementById('p1-hero-img-input');
+            const targetSrc = (preview && preview.src && !preview.src.includes('placehold.co'))
+                ? preview.src
+                : (input ? input.value.trim() : '');
+
+            if (!targetSrc) {
+                showToast("يرجى اختيار صورة أولاً لتتمكن من قصها", true);
+                return;
+            }
+
+            const modal = document.getElementById('hero-crop-modal');
+            const targetImg = document.getElementById('cropper-target-img');
+            if (!modal || !targetImg) return;
+
+            // Destroy previous cropper instance if active
+            if (window.heroCropperInstance) {
+                window.heroCropperInstance.destroy();
+                window.heroCropperInstance = null;
+            }
+
+            modal.classList.remove('hidden');
+
+            targetImg.onload = function () {
+                if (window.heroCropperInstance) {
+                    window.heroCropperInstance.destroy();
+                }
+                try {
+                    window.heroCropperInstance = new Cropper(targetImg, {
+                        aspectRatio: currentCropRatio,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 0.92,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                        responsive: true,
+                        checkCrossOrigin: true
+                    });
+                } catch (e) {
+                    console.error("Cropper init failed:", e);
+                }
+            };
+
+            targetImg.onerror = function () {
+                showToast("تعذر تحميل الصورة داخل محرر القص (قد تكون الصورة برابط غير صالح)", true);
+            };
+
+            targetImg.src = targetSrc;
+        };
+
+        window.closeHeroCropper = function () {
+            const modal = document.getElementById('hero-crop-modal');
+            if (modal) modal.classList.add('hidden');
+            if (window.heroCropperInstance) {
+                window.heroCropperInstance.destroy();
+                window.heroCropperInstance = null;
+            }
+        };
+
+        window.setCropRatio = function (ratio, btn) {
+            currentCropRatio = ratio;
+            if (window.heroCropperInstance) {
+                window.heroCropperInstance.setAspectRatio(ratio);
+            }
+            document.querySelectorAll('.crop-ratio-btn').forEach(b => {
+                b.className = "crop-ratio-btn px-2.5 py-1 rounded-lg text-xs border border-white/10 bg-white/5 text-white/80 hover:text-white transition-all";
+            });
+            if (btn) {
+                btn.className = "crop-ratio-btn px-2.5 py-1 rounded-lg text-xs border border-sky-400/50 bg-sky-500/20 text-white font-semibold shadow-sm transition-all";
+            }
+        };
+
+        window.applyHeroCrop = async function (saveImmediately = false) {
+            if (!window.heroCropperInstance) {
+                showToast("لا يوجد إطار قص نشط", true);
+                return;
+            }
+
+            try {
+                const canvas = window.heroCropperInstance.getCroppedCanvas({
+                    maxWidth: 1200,
+                    maxHeight: 1600,
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+
+                if (!canvas) {
+                    showToast("تعذر استخراج الصورة المقصوصة", true);
+                    return;
+                }
+
+                let croppedDataUrl = "";
+                try {
+                    croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                } catch (canvasErr) {
+                    // CORS protection error for external images
+                    console.warn("CORS canvas tainted:", canvasErr);
+                    showToast("تنبيه: الصورة محمية برابط خارجي يمنع قصها مباشرة. يرجى حفظها على جهازك واختيارها عبر «من جهازك» لقصها وحفظها بكل سهولة!", true);
+                    return;
+                }
+
+                // Apply to live UI
+                const preview = document.getElementById('p1-hero-preview');
+                const input = document.getElementById('p1-hero-img-input');
+                if (preview) preview.src = croppedDataUrl;
+                if (input) input.value = croppedDataUrl;
+
+                if (!window.appState.page1) window.appState.page1 = {};
+                window.appState.page1.hero_image = croppedDataUrl;
+                try {
+                    localStorage.setItem('portfolio_hero_image', croppedDataUrl);
+                    localStorage.setItem('portfolio_hero_color_mode', window.appState.page1.hero_color_mode || 'color');
+                } catch (e) { }
+
+                closeHeroCropper();
+
+                if (saveImmediately) {
+                    showToast("جاري حفظ ونشر الصورة المقصوصة في الموقع...");
+                    await window.saveAllMasterData();
+                } else {
+                    showToast("✓ تم قص الصورة وتحديث المعاينة بنجاح! لا تنسَ الضغط على «حفظ التعديلات»");
+                }
+            } catch (err) {
+                console.error("Crop error:", err);
+                showToast("حدث خطأ أثناء قص الصورة: " + err.message, true);
+            }
+        };
+
+        // Double tap detection for mobile touchscreens
+        let lastHeroTapTime = 0;
+        const heroWrapEl = document.getElementById('hero-preview-wrapper');
+        if (heroWrapEl) {
+            heroWrapEl.addEventListener('touchend', function (e) {
+                const currentTime = new Date().getTime();
+                const tapDiff = currentTime - lastHeroTapTime;
+                if (tapDiff < 350 && tapDiff > 0) {
+                    e.preventDefault();
+                    window.openHeroCropper();
+                }
+                lastHeroTapTime = currentTime;
+            });
+        }
+
+        // Close crop modal on Escape key
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('hero-crop-modal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    closeHeroCropper();
+                }
+            }
+        });
+
+        // Live Project Image Update
+        window.handleProjImageChange = function (idx, url) {
+            if (window.appState.page2.projects[idx]) {
+                window.appState.page2.projects[idx].image = url;
+                const img = document.getElementById(`proj-img-${idx}`);
+                if (img && url) img.src = url;
+            }
+        };
+
+        // Toast feedback
+        window.showToast = function (msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const box = document.getElementById('toast-box');
+            const icon = document.getElementById('toast-icon');
+            const text = document.getElementById('toast-msg');
+
+            text.textContent = msg;
+            if (isError) {
+                box.className = "flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-xs sm:text-sm font-semibold border bg-red-950/90 text-red-200 border-red-800 backdrop-blur-2xl";
+                icon.className = "w-5 h-5 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold";
+                icon.textContent = "✕";
+            } else {
+                box.className = "flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl text-xs sm:text-sm font-semibold border bg-orbitDark text-white border-white/10 backdrop-blur-2xl";
+                icon.className = "w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold";
+                icon.textContent = "✓";
+            }
+
+            toast.classList.remove('-translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('-translate-y-20', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        };
+
+        // Render UI from state
+        window.renderUI = function () {
+            const s = window.appState;
+
+            // Page 1
+            if (s.page1) {
+                document.getElementById('p1-hero-img-input').value = s.page1.hero_image || '';
+                handleHeroImageInput(s.page1.hero_image || '');
+                setHeroColorMode(s.page1.hero_color_mode || 'grayscale');
+                document.getElementById('p1-name-ar').value = s.page1.name_ar || '';
+                document.getElementById('p1-name-en').value = s.page1.name_en || '';
+                document.getElementById('p1-role-ar').value = s.page1.role_ar || '';
+                document.getElementById('p1-role-en').value = s.page1.role_en || '';
+                document.getElementById('p1-btn-contact-ar').value = s.page1.btn_contact_ar || '';
+                document.getElementById('p1-btn-contact-en').value = s.page1.btn_contact_en || '';
+            }
+
+            // Page 2
+            if (s.page2) {
+                document.getElementById('p2-title-ar').value = s.page2.title_ar || '';
+                document.getElementById('p2-title-en').value = s.page2.title_en || '';
+                document.getElementById('p2-subtitle-ar').value = s.page2.subtitle_ar || '';
+                document.getElementById('p2-subtitle-en').value = s.page2.subtitle_en || '';
+
+                const projects = s.page2.projects || [];
+                const badge = document.getElementById('nav-proj-badge');
+                const statCount = document.getElementById('stat-active-projects');
+                const sideCount = document.getElementById('sidebar-task-count');
+                if (badge) badge.textContent = projects.length;
+                if (statCount) statCount.textContent = projects.length;
+                if (sideCount) sideCount.textContent = projects.length;
+
+                // Render Left Sidebar Task Items (Exact image match)
+                const sideList = document.getElementById('sidebar-projects-list');
+                if (sideList) {
+                    sideList.innerHTML = '';
+                    projects.forEach((p, i) => {
+                        const item = document.createElement('div');
+                        item.className = "flex items-center justify-between p-2 rounded-xl hover:bg-white/[0.04] transition-all cursor-pointer group";
+                        item.onclick = () => switchPageTab('page2');
+                        item.innerHTML = `
+                            <div class="flex items-center gap-2.5 truncate">
+                                <span class="w-4 h-4 rounded border border-white/20 flex items-center justify-center text-[10px] text-sky-400 bg-sky-500/10">✓</span>
+                                <span class="text-xs text-white/80 group-hover:text-white truncate">${p.title_ar || 'مشروع'}</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-white/30">0${i + 1}</span>
+                        `;
+                        sideList.appendChild(item);
+                    });
+                }
+
+                // Render Project Cards in Workspace
+                const container = document.getElementById('projects-workspace-container');
+                if (container) {
+                    container.innerHTML = '';
+                    projects.forEach((proj, idx) => {
+                        const card = document.createElement('div');
+                        card.className = "glass-card rounded-2xl p-5 lg:p-6 space-y-4 relative group";
+                        card.innerHTML = `
+                            <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="w-6 h-6 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-mono font-bold">
+                                        0${idx + 1}
+                                    </span>
+                                    <span class="text-sm font-bold text-white">${proj.title_ar || 'مشروع جديد'}</span>
+                                    <span class="text-xs text-white/40 font-mono" dir="ltr">(${proj.title_en || 'Untitled'})</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${proj.link && proj.link !== '#' ? `
+                                        <a href="${proj.link}" target="_blank" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-white/70 hover:text-white flex items-center gap-1 transition-all">
+                                            <span>دخول الموقع</span>
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        </a>
+                                    ` : ''}
+                                    <button onclick="removeProject(${idx})" class="p-1 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                                <!-- Image Preview & URL (4 cols) -->
+                                <div class="lg:col-span-4 space-y-2.5">
+                                    <div class="relative h-44 rounded-xl overflow-hidden bg-black/80 border border-white/10 group/img">
+                                        <img id="proj-img-${idx}"
+                                             src="${proj.image || 'https://placehold.co/600x400/131722/38bdf8?text=Project'}"
+                                             onerror="this.src='https://placehold.co/600x400/131722/38bdf8?text=Invalid+Image'"
+                                             class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500" alt="Preview">
+                                        <span class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-mono bg-black/80 text-sky-400 border border-white/10">
+                                            ${proj.badge || '01 / Work'}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] text-white/50 mb-1">رابط صورة المشروع</label>
+                                        <input type="url" value="${proj.image || ''}"
+                                               oninput="handleProjImageChange(${idx}, this.value)"
+                                               class="w-full glass-input rounded-xl px-3 py-1.5 text-xs text-white font-mono" dir="ltr" placeholder="https://...">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] text-white/50 mb-1">الشارة (Badge)</label>
+                                        <input type="text" value="${proj.badge || ''}"
+                                               oninput="window.appState.page2.projects[${idx}].badge = this.value"
+                                               class="w-full glass-input rounded-xl px-3 py-1.5 text-xs text-white font-mono" dir="ltr" placeholder="01 / Photo">
+                                    </div>
+                                </div>
+
+                                <!-- Texts, Description & Link (8 cols) -->
+                                <div class="lg:col-span-8 space-y-3.5">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs text-white/70 mb-1">اسم المشروع (عربي)</label>
+                                            <input type="text" value="${proj.title_ar || ''}"
+                                                   oninput="window.appState.page2.projects[${idx}].title_ar = this.value"
+                                                   class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white" placeholder="ظلال صامتة">
+                                        </div>
+                                        <div dir="ltr">
+                                            <label class="block text-xs text-white/70 mb-1 text-left">Project Name (EN)</label>
+                                            <input type="text" value="${proj.title_en || ''}"
+                                                   oninput="window.appState.page2.projects[${idx}].title_en = this.value"
+                                                   class="w-full glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white text-left" placeholder="Silent Shadows">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs text-white/70 mb-1">وصف المشروع (عربي)</label>
+                                            <textarea rows="2"
+                                                      oninput="window.appState.page2.projects[${idx}].desc_ar = this.value"
+                                                      class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white resize-none">${proj.desc_ar || ''}</textarea>
+                                        </div>
+                                        <div dir="ltr">
+                                            <label class="block text-xs text-white/70 mb-1 text-left">Description (EN)</label>
+                                            <textarea rows="2"
+                                                      oninput="window.appState.page2.projects[${idx}].desc_en = this.value"
+                                                      class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white resize-none text-left">${proj.desc_en || ''}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <!-- Link -->
+                                    <div class="pt-2 border-t border-white/[0.06] grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                                        <div class="sm:col-span-8 space-y-1">
+                                            <label class="block text-xs font-bold text-sky-400 flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                                                <span>رابط الموقع الذي يدخل عليه الزائر</span>
+                                            </label>
+                                            <input type="url" value="${proj.link || ''}"
+                                                   oninput="window.appState.page2.projects[${idx}].link = this.value"
+                                                   class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white font-mono" dir="ltr" placeholder="https://...">
+                                        </div>
+                                        <div class="sm:col-span-4 space-y-1">
+                                            <label class="block text-xs text-white/60">نص زر الدخول</label>
+                                            <input type="text" value="${proj.btn_text_ar || 'دخول المشروع ←'}"
+                                                   oninput="window.appState.page2.projects[${idx}].btn_text_ar = this.value"
+                                                   class="w-full glass-input rounded-xl px-3 py-2 text-xs text-white">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+            }
+
+            // Page 3
+            if (s.page3) {
+                document.getElementById('p3-title-ar').value = s.page3.title_ar || '';
+                document.getElementById('p3-title-en').value = s.page3.title_en || '';
+                document.getElementById('p3-subtitle-ar').value = s.page3.subtitle_ar || '';
+                document.getElementById('p3-subtitle-en').value = s.page3.subtitle_en || '';
+
+                if (s.page3.hire) {
+                    document.getElementById('p3-hire-avail').value = s.page3.hire.avail_ar || '';
+                    document.getElementById('p3-hire-title').value = s.page3.hire.title_ar || '';
+                    document.getElementById('p3-hire-desc').value = s.page3.hire.desc_ar || '';
+                }
+
+                if (s.page3.social) {
+                    document.getElementById('p3-insta-id').value = s.page3.social.instagram || '';
+                    document.getElementById('p3-snap-id').value = s.page3.social.snapchat || '';
+                    document.getElementById('p3-copyright').value = s.page3.social.copyright || '';
+                }
+
+                const jobsBox = document.getElementById('jobs-workspace-container');
+                if (jobsBox && s.page3.jobs) {
+                    jobsBox.innerHTML = '';
+                    s.page3.jobs.forEach((j, i) => {
+                        const row = document.createElement('div');
+                        row.className = "p-3.5 rounded-xl bg-white/[0.02] border border-white/5 space-y-2.5";
+                        row.innerHTML = `
+                            <div class="flex items-center justify-between text-xs text-sky-400 font-mono">
+                                <span>الخبرة 0${i + 1}</span>
+                                <span>${j.period || ''}</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] text-white/50 mb-1">المسمى (عربي)</label>
+                                    <input type="text" value="${j.role_ar || ''}" oninput="window.appState.page3.jobs[${i}].role_ar = this.value" class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white">
+                                </div>
+                                <div dir="ltr">
+                                    <label class="block text-[11px] text-white/50 mb-1 text-left">Role (EN)</label>
+                                    <input type="text" value="${j.role_en || ''}" oninput="window.appState.page3.jobs[${i}].role_en = this.value" class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white text-left">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-white/50 mb-1">الشركة (عربي)</label>
+                                    <input type="text" value="${j.company_ar || ''}" oninput="window.appState.page3.jobs[${i}].company_ar = this.value" class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white">
+                                </div>
+                                <div dir="ltr">
+                                    <label class="block text-[11px] text-white/50 mb-1 text-left">Company (EN)</label>
+                                    <input type="text" value="${j.company_en || ''}" oninput="window.appState.page3.jobs[${i}].company_en = this.value" class="w-full glass-input rounded-lg px-3 py-1.5 text-xs text-white text-left">
+                                </div>
+                            </div>
+                        `;
+                        jobsBox.appendChild(row);
+                    });
+                }
+            }
+        };
+
+        // Add Project
+        window.addNewProject = function () {
+            if (!window.appState.page2.projects) window.appState.page2.projects = [];
+            const idx = window.appState.page2.projects.length + 1;
+            const item = {
+                id: Date.now(),
+                badge: `0${idx} / Work`,
+                title_ar: `مشروع جديد ${idx}`,
+                title_en: `New Project 0${idx}`,
+                desc_ar: "وصف مميز للمشروع وما تم إنجازه.",
+                desc_en: "Clear overview of the new design commission.",
+                image: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80",
+                link: "https://",
+                btn_text_ar: "دخول المشروع ←",
+                btn_text_en: "View Project →"
+            };
+            window.appState.page2.projects.push(item);
+            renderUI();
+            switchPageTab('page2');
+            showToast("تمت إضافة بطاقة مشروع جديدة");
+        };
+
+        // Remove Project
+        window.removeProject = function (i) {
+            if (confirm("هل تريد حذف هذا المشروع؟")) {
+                window.appState.page2.projects.splice(i, 1);
+                renderUI();
+                showToast("تم حذف المشروع بنجاح");
+            }
+        };
+
+        // Read all inputs into state
+        function syncInputsToState() {
+            const s = window.appState;
+            // Page 1
+            s.page1.hero_image = document.getElementById('p1-hero-img-input').value.trim();
+            s.page1.hero_color_mode = window.appState.page1.hero_color_mode || 'grayscale';
+            s.page1.name_ar = document.getElementById('p1-name-ar').value.trim();
+            s.page1.name_en = document.getElementById('p1-name-en').value.trim();
+            s.page1.role_ar = document.getElementById('p1-role-ar').value.trim();
+            s.page1.role_en = document.getElementById('p1-role-en').value.trim();
+            s.page1.btn_contact_ar = document.getElementById('p1-btn-contact-ar').value.trim();
+            s.page1.btn_contact_en = document.getElementById('p1-btn-contact-en').value.trim();
+
+            // Page 2
+            s.page2.title_ar = document.getElementById('p2-title-ar').value.trim();
+            s.page2.title_en = document.getElementById('p2-title-en').value.trim();
+            s.page2.subtitle_ar = document.getElementById('p2-subtitle-ar').value.trim();
+            s.page2.subtitle_en = document.getElementById('p2-subtitle-en').value.trim();
+
+            // Page 3
+            s.page3.title_ar = document.getElementById('p3-title-ar').value.trim();
+            s.page3.title_en = document.getElementById('p3-title-en').value.trim();
+            s.page3.subtitle_ar = document.getElementById('p3-subtitle-ar').value.trim();
+            s.page3.subtitle_en = document.getElementById('p3-subtitle-en').value.trim();
+
+            if (!s.page3.hire) s.page3.hire = {};
+            s.page3.hire.avail_ar = document.getElementById('p3-hire-avail').value.trim();
+            s.page3.hire.title_ar = document.getElementById('p3-hire-title').value.trim();
+            s.page3.hire.desc_ar = document.getElementById('p3-hire-desc').value.trim();
+
+            if (!s.page3.social) s.page3.social = {};
+            s.page3.social.instagram = document.getElementById('p3-insta-id').value.trim();
+            s.page3.social.snapchat = document.getElementById('p3-snap-id').value.trim();
+            s.page3.social.copyright = document.getElementById('p3-copyright').value.trim();
+        }
+
+        // Save to Firebase Realtime Database
+        window.saveAllMasterData = async function () {
+            syncInputsToState();
+
+            const btn = document.getElementById('btn-save-master');
+            let orig = "";
+            if (btn) {
+                orig = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `<span class="animate-spin text-sm">↻</span> جاري الحفظ...`;
+            }
+
+            try {
+                await set(portfolioRef, window.appState);
+                try {
+                    localStorage.setItem('orbit_studio_backup', JSON.stringify(window.appState));
+                    localStorage.setItem('portfolio_cached_data', JSON.stringify(window.appState));
+                    if (window.appState.page1) {
+                        if (window.appState.page1.hero_image) {
+                            localStorage.setItem('portfolio_hero_image', window.appState.page1.hero_image);
+                        }
+                        if (window.appState.page1.hero_color_mode) {
+                            localStorage.setItem('portfolio_hero_color_mode', window.appState.page1.hero_color_mode);
+                        }
+                    }
+                } catch (e) { }
+                showToast("✓ تم حفظ ونشر جميع التعديلات في موقعك فورياً!");
+            } catch (err) {
+                console.error("Firebase save error:", err);
+                if (err.message && err.message.includes("PERMISSION_DENIED")) {
+                    showToast("تنبيه الصلاحية: تأكد من تفعيل قواعد القراءة والكتابة في Firebase", true);
+                } else {
+                    showToast("خطأ أثناء الحفظ: " + err.message, true);
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = orig;
+                }
+            }
+        };
+
+        // Keyboard Shortcut: Ctrl + S
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                saveAllMasterData();
+            }
+        });
+
+        // Load & Sync from Firebase
+        onValue(portfolioRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                try {
+                    localStorage.setItem('portfolio_cached_data', JSON.stringify(data));
+                    if (data.page1) {
+                        if (data.page1.hero_image) localStorage.setItem('portfolio_hero_image', data.page1.hero_image);
+                        if (data.page1.hero_color_mode) localStorage.setItem('portfolio_hero_color_mode', data.page1.hero_color_mode);
+                    }
+                } catch (e) { }
+                if (data.page1) window.appState.page1 = Object.assign({}, defaultState.page1, data.page1);
+                if (data.page2) {
+                    window.appState.page2 = Object.assign({}, defaultState.page2, data.page2);
+                } else if (data.projects || data.section) {
+                    window.appState.page2.title_ar = data.section?.title_ar || defaultState.page2.title_ar;
+                    window.appState.page2.title_en = data.section?.title_en || defaultState.page2.title_en;
+                    window.appState.page2.subtitle_ar = data.section?.subtitle_ar || defaultState.page2.subtitle_ar;
+                    window.appState.page2.subtitle_en = data.section?.subtitle_en || defaultState.page2.subtitle_en;
+                    window.appState.page2.projects = data.projects || defaultState.page2.projects;
+                }
+                if (data.page3) window.appState.page3 = Object.assign({}, defaultState.page3, data.page3);
+            } else {
+                window.appState = JSON.parse(JSON.stringify(defaultState));
+            }
+            renderUI();
+            const topStatus = document.getElementById('top-sync-status');
+            if (topStatus) topStatus.textContent = "Firebase Live (متصل)";
+        }, (err) => {
+            console.warn("Fetch notice:", err);
+            renderUI();
+        });
+    </script>
+</body>
+
+</html>
