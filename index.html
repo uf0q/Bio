@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3asm - Personal Portfolio</title>
+    <title>معتصم - الملف الشخصي والأعمال</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -23,8 +23,9 @@
                         accentHover: '#d98c52'
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Cairo', 'sans-serif'],
                         arabic: ['Cairo', 'sans-serif'],
+                        english: ['Inter', 'sans-serif'],
                         serif: ['Playfair Display', 'serif']
                     }
                 }
@@ -35,12 +36,12 @@
     <style>
         body {
             background-color: #1c1c1c;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Cairo', sans-serif;
             overflow: hidden;
         }
 
-        html[dir="rtl"] body {
-            font-family: 'Cairo', sans-serif;
+        html[lang="en"] body {
+            font-family: 'Inter', sans-serif;
         }
 
         /* Smooth page transitions */
@@ -192,6 +193,204 @@
             animation: topNavSlide 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
             will-change: opacity, transform;
         }
+
+        /* ================= Background Site Audio Controller ================= */
+        @keyframes audioWave1 {
+            0%, 100% { height: 4px; }
+            50% { height: 14px; }
+        }
+        @keyframes audioWave2 {
+            0%, 100% { height: 13px; }
+            50% { height: 3px; }
+        }
+        @keyframes audioWave3 {
+            0%, 100% { height: 5px; }
+            50% { height: 15px; }
+        }
+        @keyframes audioWave4 {
+            0%, 100% { height: 12px; }
+            50% { height: 4px; }
+        }
+
+        .sound-bar {
+            width: 2px;
+            border-radius: 9999px;
+            background-color: currentColor;
+            display: inline-block;
+            transition: height 0.25s ease, opacity 0.25s ease;
+        }
+
+        .audio-btn.is-playing .sound-bar-1 {
+            animation: audioWave1 0.75s ease-in-out infinite alternate;
+        }
+        .audio-btn.is-playing .sound-bar-2 {
+            animation: audioWave2 0.65s ease-in-out infinite alternate 0.12s;
+        }
+        .audio-btn.is-playing .sound-bar-3 {
+            animation: audioWave3 0.85s ease-in-out infinite alternate 0.22s;
+        }
+        .audio-btn.is-playing .sound-bar-4 {
+            animation: audioWave4 0.7s ease-in-out infinite alternate 0.08s;
+        }
+
+        /* When Muted: Stop the animation & collapse the bars */
+        .audio-btn.is-muted .sound-bar {
+            animation: none !important;
+            height: 2px !important;
+            opacity: 0.35;
+        }
+        .audio-btn.is-muted .music-note-icon {
+            opacity: 0.4;
+            transform: scale(0.95);
+        }
+
+        /* Strike-through slash line (شطب الأيقونة بحركة سلسة عند الكتم) */
+        .audio-slash {
+            position: absolute;
+            left: -4px;
+            right: -4px;
+            top: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, #ef4444, #f87171);
+            border-radius: 9999px;
+            transform: rotate(-45deg) scaleX(0);
+            transform-origin: center;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
+            z-index: 10;
+        }
+
+        .audio-btn.is-muted .audio-slash {
+            transform: rotate(-45deg) scaleX(1);
+            opacity: 1;
+        }
+
+        .audio-btn.is-muted {
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            background-color: rgba(255, 255, 255, 0.04) !important;
+            color: rgba(255, 255, 255, 0.5) !important;
+            box-shadow: none !important;
+        }
+
+        .audio-btn:hover.is-muted {
+            border-color: rgba(255, 255, 255, 0.35) !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+
+        /* ================= ANIMATED HAND FINGER GESTURE & ICONS ================= */
+        @keyframes fingerSwipeDown {
+            0% {
+                transform: translateY(-8px) scale(0.92);
+                opacity: 0.1;
+            }
+            20% {
+                transform: translateY(-5px) scale(1.04);
+                opacity: 1;
+            }
+            75% {
+                transform: translateY(6px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(10px) scale(0.92);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fingerSwipeUp {
+            0% {
+                transform: translateY(8px) scale(0.92);
+                opacity: 0.1;
+            }
+            20% {
+                transform: translateY(5px) scale(1.04);
+                opacity: 1;
+            }
+            75% {
+                transform: translateY(-6px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10px) scale(0.92);
+                opacity: 0;
+            }
+        }
+
+        @keyframes swipeTrailDown {
+            0%, 100% {
+                transform: translateY(-3px);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(4px);
+                opacity: 1;
+            }
+        }
+
+        @keyframes swipeTrailUp {
+            0%, 100% {
+                transform: translateY(3px);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        @keyframes touchRipplePulse {
+            0% {
+                transform: scale(0.3);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        @keyframes scrollIconBeacon {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(197, 123, 67, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 18px 3px rgba(197, 123, 67, 0.4);
+            }
+        }
+
+        .finger-down {
+            animation: fingerSwipeDown 1.15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .finger-up {
+            animation: fingerSwipeUp 1.15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .trail-down {
+            animation: swipeTrailDown 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .trail-up {
+            animation: swipeTrailUp 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .touch-pulse {
+            animation: touchRipplePulse 1.15s ease-out infinite;
+        }
+
+        .scroll-icon-pulse {
+            animation: scrollIconBeacon 1.8s infinite;
+        }
+
+        .scroll-countdown-circle {
+            transition: stroke-dashoffset 1.8s linear;
+        }
+
+        .scroll-circle-pop {
+            transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
     </style>
 </head>
 
@@ -215,40 +414,40 @@
             <nav class="hidden md:flex items-center gap-6 sm:gap-11 text-xs sm:text-[13px] tracking-wider font-medium">
                 <button onclick="switchPage(0)" id="nav-0"
                     class="nav-btn relative py-1.5 text-white/60 hover:text-white transition-colors">
-                    <span data-i18n="nav_home">home</span>
+                    <span data-i18n="nav_home">الرئيسية</span>
                     <span
                         class="nav-indicator absolute bottom-0 left-0 w-full h-[1.5px] bg-white transition-all duration-300 opacity-0 scale-x-0"></span>
                 </button>
                 <button onclick="switchPage(1)" id="nav-1" class="nav-btn relative py-1.5 text-white transition-colors">
-                    <span data-i18n="nav_creatives">creatives</span>
+                    <span data-i18n="nav_creatives">الأعمال الإبداعية</span>
                     <span
                         class="nav-indicator absolute bottom-0 left-0 w-full h-[1.5px] bg-white transition-all duration-300 opacity-100 scale-x-100"></span>
                 </button>
                 <button onclick="switchPage(2)" id="nav-2"
                     class="nav-btn relative py-1.5 text-white/60 hover:text-white transition-colors">
-                    <span data-i18n="nav_jobs">jobs</span>
+                    <span data-i18n="nav_jobs">الخبرات والوظائف</span>
                     <span
                         class="nav-indicator absolute bottom-0 left-0 w-full h-[1.5px] bg-white transition-all duration-300 opacity-0 scale-x-0"></span>
                 </button>
             </nav>
 
             <!-- Top Right Action Area -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5 sm:gap-3">
                 <!-- Desktop Action Icons: (Language Translation Toggle Button + Quick Contact Modal Trigger) -->
                 <div class="hidden md:flex items-center gap-3">
                     <!-- Language Translation Toggle Button -->
-                    <button onclick="toggleLanguage()" title="Translate / ترجمة"
+                    <button onclick="toggleLanguage()" title="Translate / تغيير اللغة"
                         class="group flex items-center gap-1.5 px-2.5 h-8 rounded-full border border-white/30 hover:border-accent text-white/80 hover:text-white transition-all duration-300 bg-white/5 hover:bg-accent/10">
                         <svg class="w-3.5 h-3.5 text-accent group-hover:rotate-12 transition-transform" fill="none"
                             stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                         </svg>
-                        <span id="lang-badge" class="text-[11px] font-semibold tracking-wider">AR</span>
+                        <span id="lang-badge" class="text-[11px] font-semibold tracking-wider">EN</span>
                     </button>
 
                     <!-- Original Top-Right Circular Icon (Email / Search Modal Trigger) -->
-                    <button onclick="toggleContactModal()" title="Quick Contact / Search"
+                    <button onclick="toggleContactModal()" title="Quick Contact / تواصل سريع"
                         class="w-8 h-8 rounded-full border border-white/40 hover:border-accent flex items-center justify-center text-white/80 hover:text-accent transition-all duration-300 hover:scale-105">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.7"
                             viewBox="0 0 24 24">
@@ -258,10 +457,37 @@
                     </button>
                 </div>
 
+                <!-- Site Background Audio Controller Button (بجانب زر المزيد) -->
+                <button id="site-audio-toggle" onclick="toggleSiteAudio()"
+                    title="صوت الموقع / Site Audio"
+                    aria-label="Toggle site background music"
+                    class="audio-btn is-playing group relative flex items-center justify-center gap-1.5 px-3 h-8 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent/20 text-accent transition-all duration-300 shadow-sm hover:shadow-accent/25 active:scale-95 cursor-pointer">
+                    
+                    <!-- Music Icon & Animated Dancing Equalizer Bars (أغنية تتحرك) -->
+                    <div class="relative flex items-center gap-1.5 h-3.5 select-none">
+                        <!-- Music Note SVG -->
+                        <svg class="music-note-icon w-3.5 h-3.5 transition-all duration-300 group-hover:scale-110"
+                            fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                        </svg>
+
+                        <!-- Equalizer Moving Sound Wave Bars -->
+                        <div class="sound-wave-bars flex items-end gap-[2px] h-3.5">
+                            <span class="sound-bar sound-bar-1"></span>
+                            <span class="sound-bar sound-bar-2"></span>
+                            <span class="sound-bar sound-bar-3"></span>
+                            <span class="sound-bar sound-bar-4"></span>
+                        </div>
+
+                        <!-- Diagonal Strike-through Slash (تنشطب عند النقر والكتم بأنيميشن) -->
+                        <span class="audio-slash"></span>
+                    </div>
+                </button>
+
                 <!-- Mobile Only: "المزيد" (More) Button in place of Contact / Language buttons -->
                 <button onclick="toggleMobileMenu()" id="mobile-menu-btn" title="المزيد / More"
                     class="md:hidden flex items-center gap-2 px-3.5 h-8 rounded-full border border-white/40 hover:border-accent text-white/90 hover:text-white bg-white/5 hover:bg-accent/10 transition-all duration-300 active:scale-95">
-                    <span data-i18n="nav_more" class="text-xs font-medium tracking-wide">More</span>
+                    <span data-i18n="nav_more" class="text-xs font-medium tracking-wide">المزيد</span>
                     <svg class="w-3.5 h-3.5 text-accent" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -302,11 +528,11 @@
                         <div>
                             <h1 data-i18n="hero_name"
                                 class="text-4xl sm:text-5xl lg:text-[54px] font-light tracking-wide text-white leading-tight drop-shadow-md md:drop-shadow-none">
-                                mutasim
+                                معـــتصم
                             </h1>
                             <p data-i18n="hero_role"
                                 class="text-base sm:text-lg lg:text-[20px] text-white/85 md:text-white/70 font-light tracking-wide mt-2 drop-shadow-md md:drop-shadow-none">
-                                programmer / psychologist
+                                مبرمج و أخصائي نفسي
                             </p>
                         </div>
                     </div>
@@ -314,16 +540,18 @@
                     <!-- Rounded Orange Outline Contact Button -->
                     <button onclick="toggleContactModal()"
                         class="px-11 py-3 rounded-full border border-accent bg-darkBg/40 md:bg-transparent backdrop-blur-sm md:backdrop-blur-none text-white/95 hover:bg-accent hover:text-white text-xs sm:text-sm tracking-wider transition-all duration-300 shadow-sm hover:shadow-accent/20">
-                        <span data-i18n="btn_contact">contact</span>
+                        <span data-i18n="btn_contact">تواصل معي</span>
                     </button>
                 </div>
 
-                <!-- Right Column: Hero Portrait (Pre-hydrated directly with zero flicker) -->
+                <!-- Right Column: Hero Portrait (Smooth instant load without flash) -->
                 <div
                     class="absolute inset-0 md:inset-auto md:right-20 lg:right-32 md:bottom-0 w-full md:w-[480px] lg:w-[560px] h-full md:h-[82vh] pointer-events-none flex items-end justify-center z-0 md:z-10 overflow-hidden">
-                    <img id="hero-portrait-img" src="hero-portrait.jpg" onerror="this.src='hero-portrait.jpg'"
-                        alt="mutasim Portrait"
-                        class="portrait-fade w-full h-full object-cover object-top grayscale-0" />
+                    <img id="hero-portrait-img"
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
+                        alt="Portrait"
+                        class="portrait-fade w-full h-full object-cover object-top grayscale-0 opacity-0 transition-opacity duration-300"
+                        onerror="this.classList.add('opacity-0')" />
                     <script>
                             (function () {
                                 var img = document.getElementById('hero-portrait-img');
@@ -332,18 +560,33 @@
                                 var cachedMode = null;
                                 try {
                                     cachedImg = localStorage.getItem('portfolio_hero_image');
+                                    if (cachedImg && cachedImg.indexOf('hero-portrait.jpg') !== -1) {
+                                        localStorage.removeItem('portfolio_hero_image');
+                                        cachedImg = null;
+                                    }
+                                    if (!cachedImg) {
+                                        var raw = localStorage.getItem('portfolio_cached_data') || localStorage.getItem('orbit_studio_backup');
+                                        if (raw) {
+                                            var parsed = JSON.parse(raw);
+                                            if (parsed && parsed.page1 && parsed.page1.hero_image && parsed.page1.hero_image.indexOf('hero-portrait.jpg') === -1) {
+                                                cachedImg = parsed.page1.hero_image;
+                                            }
+                                        }
+                                    }
                                     cachedMode = localStorage.getItem('portfolio_hero_color_mode');
                                 } catch (e) { }
 
-                                // Don't re-assign src if it's already hero-portrait.jpg
-                                if (cachedImg && !cachedImg.endsWith('hero-portrait.jpg')) {
-                                    var currentSrc = img.getAttribute('src');
-                                    if (currentSrc !== cachedImg && img.dataset.appliedSrc !== cachedImg) {
-                                        img.src = cachedImg;
-                                        img.dataset.appliedSrc = cachedImg;
+                                // Never load or display hero-portrait.jpg
+                                if (cachedImg && cachedImg.indexOf('hero-portrait.jpg') === -1) {
+                                    img.src = cachedImg;
+                                    img.dataset.appliedSrc = cachedImg;
+                                    if (img.complete && img.naturalWidth > 0) {
+                                        img.classList.remove('opacity-0');
+                                    } else {
+                                        img.onload = function () {
+                                            img.classList.remove('opacity-0');
+                                        };
                                     }
-                                } else {
-                                    img.dataset.appliedSrc = 'hero-portrait.jpg';
                                 }
 
                                 if (cachedMode === 'grayscale') {
@@ -364,7 +607,7 @@
                     <span class="w-10 h-[1px] bg-white/40"></span>
                     <button onclick="switchPage(1)"
                         class="group flex items-center gap-3 text-xs sm:text-sm tracking-wider text-white/90 hover:text-accent transition-colors">
-                        <span data-i18n="view_projects" class="font-medium">view projects</span>
+                        <span data-i18n="view_projects" class="font-medium">عرض المشاريع</span>
                         <span
                             class="w-6 h-6 rounded-full border border-white/60 group-hover:border-accent flex items-center justify-center transition-all group-hover:translate-y-0.5">
                             <svg class="w-3 h-3 text-accent" fill="none" stroke="currentColor" stroke-width="2"
@@ -385,9 +628,9 @@
                         <div class="w-[2px] h-10 bg-accent"></div>
                         <div>
                             <h2 data-i18n="page2_title"
-                                class="text-2xl sm:text-3xl font-light text-white tracking-wide">Selected Works</h2>
-                            <p data-i18n="page2_subtitle" class="text-xs sm:text-sm text-white/50 font-light">Visual
-                                storytelling, brand identity & monochrome photography</p>
+                                class="text-2xl sm:text-3xl font-light text-white tracking-wide">مختارات من أعمالي</h2>
+                            <p data-i18n="page2_subtitle" class="text-xs sm:text-sm text-white/50 font-light">السرد
+                                البصري، الهوية التجارية والتصوير الأحادي اللون</p>
                         </div>
                     </div>
 
@@ -409,9 +652,9 @@
                                 <div>
                                     <h3 data-i18n="proj1_title"
                                         class="text-base font-medium text-white group-hover:text-accent transition-colors">
-                                        Silent Shadows</h3>
+                                        ظلال صامتة</h3>
                                     <p data-i18n="proj1_desc" class="text-xs text-white/60 mt-1 leading-relaxed">
-                                        Architectural black & white portrait series shot in Paris.</p>
+                                        سلسلة صور شخصية ومعمارية بالأبيض والأسود تم تصويرها في باريس.</p>
                                 </div>
                                 <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer"
                                     class="inline-flex items-center justify-between mt-4 px-4 py-2 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent text-accent hover:text-white text-xs font-medium tracking-wide transition-all duration-300 group/btn shadow-sm hover:shadow-accent/20">
@@ -419,7 +662,7 @@
                                     <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1"
                                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                             d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
                                 </a>
                             </div>
@@ -441,9 +684,9 @@
                                 <div>
                                     <h3 data-i18n="proj2_title"
                                         class="text-base font-medium text-white group-hover:text-accent transition-colors">
-                                        Noir Studio Identity</h3>
+                                        هوية استوديو نوار</h3>
                                     <p data-i18n="proj2_desc" class="text-xs text-white/60 mt-1 leading-relaxed">
-                                        Minimalist editorial typography and packaging system.</p>
+                                        تصميم خطوط تحريرية مبسطة ونظام تغليف متكامل.</p>
                                 </div>
                                 <a href="https://behance.net" target="_blank" rel="noopener noreferrer"
                                     class="inline-flex items-center justify-between mt-4 px-4 py-2 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent text-accent hover:text-white text-xs font-medium tracking-wide transition-all duration-300 group/btn shadow-sm hover:shadow-accent/20">
@@ -473,9 +716,9 @@
                                 <div>
                                     <h3 data-i18n="proj3_title"
                                         class="text-base font-medium text-white group-hover:text-accent transition-colors">
-                                        Vogue Monochrome</h3>
+                                        فوغ مونوكروم</h3>
                                     <p data-i18n="proj3_desc" class="text-xs text-white/60 mt-1 leading-relaxed">
-                                        High-contrast studio portraits and magazine layout direction.</p>
+                                        جلسات تصوير استوديو عالية التباين وإخراج فني للمجلات.</p>
                                 </div>
                                 <a href="https://dribbble.com" target="_blank" rel="noopener noreferrer"
                                     class="inline-flex items-center justify-between mt-4 px-4 py-2 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent text-accent hover:text-white text-xs font-medium tracking-wide transition-all duration-300 group/btn shadow-sm hover:shadow-accent/20">
@@ -495,10 +738,10 @@
                 <div class="flex items-center justify-between pt-4 mt-4 border-t border-white/10 pr-6">
                     <button onclick="switchPage(0)"
                         class="text-xs text-white/60 hover:text-white flex items-center gap-2 transition-colors">
-                        <span>←</span> <span data-i18n="back_home">Back to profile</span>
+                        <span>←</span> <span data-i18n="back_home">العودة للملف الشخصي</span>
                     </button>
                     <button onclick="switchPage(2)" class="text-xs text-accent hover:underline flex items-center gap-2">
-                        <span data-i18n="next_jobs">View experience & jobs</span> <span>→</span>
+                        <span data-i18n="next_jobs">عرض الخبرات والوظائف</span> <span>→</span>
                     </button>
                 </div>
             </section>
@@ -512,10 +755,10 @@
                         <div class="w-[2px] h-10 bg-accent"></div>
                         <div>
                             <h2 data-i18n="page3_title"
-                                class="text-2xl sm:text-3xl font-light text-white tracking-wide">Experience & Jobs
+                                class="text-2xl sm:text-3xl font-light text-white tracking-wide">الخبرات والوظائف
                             </h2>
                             <p data-i18n="page3_subtitle" class="text-xs sm:text-sm text-white/50 font-light">
-                                Professional career timeline & creative roles</p>
+                                المسيرة المهنية والأدوار الإبداعية</p>
                         </div>
                     </div>
 
@@ -529,13 +772,13 @@
                                 class="p-4 rounded-xl bg-cardBg/70 border border-white/5 hover:border-white/15 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2 flex-1">
                                 <div>
                                     <span class="text-[11px] text-accent font-mono">2023 — PRESENT</span>
-                                    <h3 data-i18n="job1_role" class="text-sm sm:text-base font-medium text-white">Senior
-                                        Art Director & Photographer</h3>
-                                    <p data-i18n="job1_company" class="text-xs text-white/50">Atelier Lumière — Paris,
-                                        France</p>
+                                    <h3 data-i18n="job1_role" class="text-sm sm:text-base font-medium text-white">مدير
+                                        فني أول ومصور فوتوغرافي</h3>
+                                    <p data-i18n="job1_company" class="text-xs text-white/50">أتيليه لوميير — باريس،
+                                        فرنسا</p>
                                 </div>
                                 <span data-i18n="job_tag_full"
-                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-accent/40 text-accent">Full-time</span>
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-accent/40 text-accent">دوام كامل</span>
                             </div>
 
                             <!-- Job Item 2 -->
@@ -543,13 +786,13 @@
                                 class="p-4 rounded-xl bg-cardBg/70 border border-white/5 hover:border-white/15 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2 flex-1">
                                 <div>
                                     <span class="text-[11px] text-white/40 font-mono">2020 — 2023</span>
-                                    <h3 data-i18n="job2_role" class="text-sm sm:text-base font-medium text-white">Lead
-                                        Graphic & Brand Designer</h3>
-                                    <p data-i18n="job2_company" class="text-xs text-white/50">Monolith Creative Agency —
-                                        Berlin</p>
+                                    <h3 data-i18n="job2_role" class="text-sm sm:text-base font-medium text-white">مصمم
+                                        جرافيك وهويات بصرية رئيسي</h3>
+                                    <p data-i18n="job2_company" class="text-xs text-white/50">وكالة مونوليث الإبداعية —
+                                        برلين</p>
                                 </div>
                                 <span data-i18n="job_tag_contract"
-                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">Contract</span>
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">عقد عمل</span>
                             </div>
 
                             <!-- Job Item 3 -->
@@ -558,12 +801,12 @@
                                 <div>
                                     <span class="text-[11px] text-white/40 font-mono">2018 — 2020</span>
                                     <h3 data-i18n="job3_role" class="text-sm sm:text-base font-medium text-white">
-                                        Freelance Portrait Photographer</h3>
-                                    <p data-i18n="job3_company" class="text-xs text-white/50">Independent Commissions —
-                                        Worldwide</p>
+                                        مصور بورتريه مستقل</h3>
+                                    <p data-i18n="job3_company" class="text-xs text-white/50">مشاريع حرة —
+                                        حول العالم</p>
                                 </div>
                                 <span data-i18n="job_tag_freelance"
-                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">Freelance</span>
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">عمل حر</span>
                             </div>
                         </div>
 
@@ -574,16 +817,13 @@
                                 <div class="flex items-center gap-2.5 mb-3">
                                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                                     <span data-i18n="avail_badge"
-                                        class="text-xs uppercase tracking-widest text-emerald-400 font-medium">Available
-                                        for
-                                        Freelance</span>
+                                        class="text-xs uppercase tracking-widest text-emerald-400 font-medium">متاح
+                                        للمشاريع الحرة</span>
                                 </div>
-                                <h3 data-i18n="hire_title" class="text-xl font-light text-white mb-2">Commission a
-                                    Project
+                                <h3 data-i18n="hire_title" class="text-xl font-light text-white mb-2">اطلب مشروعاً خاصاً
                                 </h3>
                                 <p data-i18n="hire_desc" class="text-xs text-white/60 leading-relaxed mb-5">
-                                    Open for editorial photography sessions, visual identity design, and art direction
-                                    consultations worldwide.
+                                    متاح لجلسات التصوير التحريري، وتصميم الهويات البصرية، والاستشارات الفنية حول العالم.
                                 </p>
 
                                 <!-- Skills Pills -->
@@ -606,7 +846,7 @@
                             <!-- Transparent Send Job Inquiry Button (styled like home page contact button) -->
                             <button onclick="toggleContactModal()"
                                 class="w-full py-3 rounded-full border border-accent bg-transparent hover:bg-accent text-white/95 hover:text-white text-xs sm:text-sm tracking-wider font-medium transition-all duration-300 shadow-sm hover:shadow-accent/20">
-                                <span data-i18n="btn_start_project">Send Job Inquiry</span>
+                                <span data-i18n="btn_start_project">إرسال طلب عمل</span>
                             </button>
                         </div>
                     </div>
@@ -616,7 +856,7 @@
                 <div class="flex items-center justify-between pt-4 mt-4 border-t border-white/10 pr-4">
                     <button onclick="switchPage(1)"
                         class="text-xs text-white/60 hover:text-white flex items-center gap-2 transition-colors">
-                        <span>←</span> <span data-i18n="back_projects">Back to projects</span>
+                        <span>←</span> <span data-i18n="back_projects">العودة للمشاريع</span>
                     </button>
                     <div class="flex items-center gap-2">
                         <!-- Instagram Account ID Box (Matched to copyright size) -->
@@ -674,7 +914,7 @@
                 <!-- Menu Body: Page Links -->
                 <div class="flex flex-col gap-3 my-auto py-6">
                     <p data-i18n="menu_title" class="text-[11px] uppercase tracking-widest text-white/40 mb-1 px-1">
-                        Navigation</p>
+                        التنقل</p>
 
                     <!-- 01: Home / الرئيسية -->
                     <button onclick="switchPage(0); toggleMobileMenu(true);" id="mobile-nav-0"
@@ -683,7 +923,7 @@
                             <span
                                 class="mobile-nav-num text-xs font-mono text-white/40 group-hover:text-accent transition-colors">01</span>
                             <span data-i18n="nav_home"
-                                class="mobile-nav-label text-base font-light tracking-wide text-white">home</span>
+                                class="mobile-nav-label text-base font-light tracking-wide text-white">الرئيسية</span>
                         </span>
                         <span class="mobile-nav-dot w-2 h-2 rounded-full bg-accent opacity-0 transition-opacity"></span>
                     </button>
@@ -695,7 +935,7 @@
                             <span
                                 class="mobile-nav-num text-xs font-mono text-white/40 group-hover:text-accent transition-colors">02</span>
                             <span data-i18n="nav_creatives"
-                                class="mobile-nav-label text-base font-light tracking-wide text-white">creatives</span>
+                                class="mobile-nav-label text-base font-light tracking-wide text-white">الأعمال الإبداعية</span>
                         </span>
                         <span class="mobile-nav-dot w-2 h-2 rounded-full bg-accent opacity-0 transition-opacity"></span>
                     </button>
@@ -707,7 +947,7 @@
                             <span
                                 class="mobile-nav-num text-xs font-mono text-white/40 group-hover:text-accent transition-colors">03</span>
                             <span data-i18n="nav_jobs"
-                                class="mobile-nav-label text-base font-light tracking-wide text-white">jobs</span>
+                                class="mobile-nav-label text-base font-light tracking-wide text-white">الخبرات والوظائف</span>
                         </span>
                         <span class="mobile-nav-dot w-2 h-2 rounded-full bg-accent opacity-0 transition-opacity"></span>
                     </button>
@@ -723,7 +963,18 @@
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                        <span data-i18n="btn_contact">contact</span>
+                        <span data-i18n="btn_contact">تواصل معي</span>
+                    </button>
+
+                    <!-- زر تشغيل/كتم الصوت داخل القائمة الجانبية (Mobile Menu Audio Button) -->
+                    <button onclick="toggleSiteAudio()" id="mobile-menu-audio-btn"
+                        class="w-full py-2.5 px-5 rounded-full border border-white/20 hover:border-accent bg-white/5 hover:bg-accent/10 text-white/85 hover:text-white flex items-center justify-between text-xs tracking-wider transition-all duration-300 active:scale-95">
+                        <div class="flex items-center gap-2">
+                            <span class="text-accent text-sm">🎵</span>
+                            <span data-i18n="menu_audio_label">صوت الموقع</span>
+                        </div>
+                        <span id="mobile-menu-audio-badge"
+                            class="px-2.5 py-0.5 rounded-full bg-accent/20 text-[11px] font-semibold text-accent border border-accent/30">شغال 🔊</span>
                     </button>
 
                     <!-- زر تغيير اللغة (Language Switcher Button) -->
@@ -735,10 +986,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                             </svg>
-                            <span data-i18n="btn_language">Change Language</span>
+                            <span data-i18n="btn_language">تغيير اللغة</span>
                         </div>
                         <span id="mobile-lang-badge"
-                            class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-semibold text-accent border border-white/10">AR</span>
+                            class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-semibold text-accent border border-white/10">EN</span>
                     </button>
 
                     <span class="text-[11px] text-white/30 text-center block pt-1">3asm © 2026</span>
@@ -756,50 +1007,99 @@
                     class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center text-white/70 hover:text-white transition-colors">
                     ✕
                 </button>
-                <h3 data-i18n="modal_title" class="text-xl font-light tracking-wide mb-1">Get in Touch</h3>
-                <p data-i18n="modal_sub" class="text-xs text-white/50 mb-5">Send a direct message to mutasim</p>
+                <h3 data-i18n="modal_title" class="text-xl font-light tracking-wide mb-1">تواصل معي</h3>
+                <p data-i18n="modal_sub" class="text-xs text-white/50 mb-5">أرسل رسالة مباشرة إلى معـــتصم</p>
 
                 <form onsubmit="handleContactSubmit(event)" class="space-y-3.5">
                     <div>
                         <label data-i18n="form_name"
-                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">Your Name</label>
+                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">الاسم الكامل</label>
                         <input type="text" required
                             class="w-full bg-darkBg border border-white/15 focus:border-accent rounded-lg px-3.5 py-2 text-sm text-white outline-none transition-colors"
-                            placeholder="Alex Mercer">
+                            placeholder="الاسم الكريم">
                     </div>
                     <div>
                         <label data-i18n="form_email"
-                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">Email Address</label>
+                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">البريد الإلكتروني</label>
                         <input type="email" required
                             class="w-full bg-darkBg border border-white/15 focus:border-accent rounded-lg px-3.5 py-2 text-sm text-white outline-none transition-colors"
-                            placeholder="alex@studio.com">
+                            placeholder="name@example.com">
                     </div>
                     <div>
                         <label data-i18n="form_msg"
-                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">Message</label>
+                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">الرسالة</label>
                         <textarea rows="3" required
                             class="w-full bg-darkBg border border-white/15 focus:border-accent rounded-lg px-3.5 py-2 text-sm text-white outline-none transition-colors"
-                            placeholder="Tell me about your project..."></textarea>
+                            placeholder="اكتب تفاصيل مشروعك أو استفسارك هنا..."></textarea>
                     </div>
                     <button type="submit"
                         class="w-full py-2.5 rounded-full bg-accent hover:bg-accentHover text-white text-xs uppercase tracking-widest font-medium transition-all">
-                        <span data-i18n="form_send">Send Message</span>
+                        <span data-i18n="form_send">إرسال الرسالة</span>
                     </button>
                 </form>
 
                 <!-- Feedback Toast inside modal -->
                 <div id="form-success"
                     class="hidden mt-4 p-3 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs text-center">
-                    <span data-i18n="form_thanks">Thank you! Your message has been sent successfully.</span>
+                    <span data-i18n="form_thanks">شكراً لك! تم إرسال رسالتك بنجاح.</span>
                 </div>
             </div>
         </div>
 
-        <!-- ================= DOUBLE SCROLL CONFIRMATION TOAST ================= -->
+        <!-- ================= CIRCULAR HAND FINGER SWIPE CONFIRMATION (BOTTOM RIGHT CORNER) ================= -->
         <div id="scroll-confirm-toast"
-            class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-none opacity-0 translate-y-2 transition-all duration-300 bg-cardBg/95 backdrop-blur-md border border-accent/50 text-white/90 px-4 py-2 rounded-full text-xs tracking-wider flex items-center gap-2.5 shadow-xl">
-            <span class="w-2 h-2 rounded-full bg-accent animate-ping"></span>
-            <span id="scroll-confirm-text">Scroll again to confirm</span>
+            class="fixed bottom-7 right-6 sm:bottom-9 sm:right-9 z-40 pointer-events-none opacity-0 scale-50 translate-y-3 scroll-circle-pop select-none">
+            <div
+                class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-cardBg/90 backdrop-blur-xl border border-accent/40 text-accent shadow-2xl shadow-accent/25 flex items-center justify-center ring-1 ring-white/10 scroll-icon-pulse overflow-hidden">
+                
+                <!-- Circular Countdown Progress SVG Ring (مؤقت دائري نيون 1.8 ثانية) -->
+                <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 60 60">
+                    <!-- Background Muted Ring -->
+                    <circle cx="30" cy="30" r="27"
+                        stroke="rgba(255, 255, 255, 0.08)" stroke-width="2.5" fill="none" />
+                    <!-- Animated Progress Indicator Ring -->
+                    <circle id="scroll-toast-circle-progress" cx="30" cy="30" r="27"
+                        stroke="#c57b43" stroke-width="2.5" stroke-linecap="round" fill="none"
+                        stroke-dasharray="170" stroke-dashoffset="0"
+                        class="scroll-countdown-circle" />
+                </svg>
+
+                <!-- Center Animated Hand Finger Gesture & Directional Trail -->
+                <div class="relative flex items-center justify-center z-10">
+                    <!-- Pointing Hand Finger SVG (أنيميشن تمرير إصبع اليد) -->
+                    <div id="scroll-hand-wrapper" class="relative finger-down">
+                        <!-- Contact Touch Ripple at fingertip -->
+                        <span id="scroll-touch-dot" class="absolute -top-1 left-2.5 w-2 h-2 rounded-full bg-accent/60 touch-pulse"></span>
+                        
+                        <!-- Hand with Pointing Index Finger SVG -->
+                        <svg id="scroll-hand-icon" class="w-7 h-7 sm:w-7.5 sm:h-7.5 text-accent drop-shadow-md"
+                            viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <!-- Outstretched Index Finger -->
+                            <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
+                            <!-- Middle finger -->
+                            <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" />
+                            <!-- Ring finger -->
+                            <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2" />
+                            <!-- Palm, Thumb & Base -->
+                            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.83l1.76 1.77" />
+                        </svg>
+                    </div>
+
+                    <!-- Small Side Direction Arrow / Trail -->
+                    <div id="scroll-arrow-wrapper" class="absolute -right-2 flex flex-col items-center">
+                        <svg id="scroll-arrow-icon" class="w-3 h-3 text-accent drop-shadow-md trail-down"
+                            fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path id="scroll-arrow-path" stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Floating Step Beacon in Top Corner -->
+                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent border border-black/80"></span>
+                </span>
+            </div>
         </div>
 
     </main>
@@ -808,7 +1108,15 @@
     <script>
         // Current State
         let currentPage = 0;
-        let currentLang = 'en';
+        let currentLang = 'ar';
+        try {
+            const savedLang = localStorage.getItem('portfolio_lang');
+            if (savedLang === 'en' || savedLang === 'ar') {
+                currentLang = savedLang;
+            } else {
+                localStorage.setItem('portfolio_lang', 'ar');
+            }
+        } catch (e) { }
 
         // Dictionary for Complete Bilingual Translation (English / Arabic)
         const translations = {
@@ -854,11 +1162,16 @@
                 form_msg: "Message",
                 form_send: "Send Message",
                 form_thanks: "Thank you! Your message has been sent successfully.",
-                scroll_confirm_down: "Scroll down again to confirm ↓",
-                scroll_confirm_up: "Scroll up again to confirm ↑",
+                scroll_confirm_down: "Scroll down again to confirm",
+                scroll_confirm_up: "Scroll up again to confirm",
+                scroll_sub_down: "Repeat gesture to switch page ↓",
+                scroll_sub_up: "Repeat gesture to switch page ↑",
                 nav_more: "More",
                 btn_language: "Change Language",
-                menu_title: "Navigation"
+                menu_title: "Navigation",
+                menu_audio_label: "Site Background Music",
+                audio_on: "Playing 🔊",
+                audio_off: "Muted 🔇"
             },
             ar: {
                 nav_home: "الرئيسية",
@@ -873,7 +1186,7 @@
                 proj1_title: "ظلال صامتة",
                 proj1_desc: "سلسلة صور شخصية ومعمارية بالأبيض والأسود تم تصويرها في باريس.",
                 proj2_title: "هوية استوديو نوار",
-                proj2_desc: "تصميم خطوط تحريرية минималиست ونظام تغليف متكامل.",
+                proj2_desc: "تصميم خطوط تحريرية مبسطة ونظام تغليف متكامل.",
                 proj3_title: "فوغ مونوكروم",
                 proj3_desc: "جلسات تصوير استوديو عالية التباين وإخراج فني للمجلات.",
                 proj_explore: "دخول المشروع ←",
@@ -881,18 +1194,18 @@
                 next_jobs: "عرض الخبرات والوظائف",
                 page3_title: "الخبرات والوظائف",
                 page3_subtitle: "المسيرة المهنية والأدوار الإبداعية",
-                job1_role: "مديرة فنية أولى ومصورة فوتوغرافية",
+                job1_role: "مدير فني أول ومصور فوتوغرافي",
                 job1_company: "أتيليه لوميير — باريس، فرنسا",
-                job2_role: "مصممة جرافيك وهويات بصرية رئيسية",
+                job2_role: "مصمم جرافيك وهويات بصرية رئيسي",
                 job2_company: "وكالة مونوليث الإبداعية — برلين",
-                job3_role: "مصورة بورتريه مستقلة",
+                job3_role: "مصور بورتريه مستقل",
                 job3_company: "مشاريع حرة — حول العالم",
                 job_tag_full: "دوام كامل",
                 job_tag_contract: "عقد عمل",
                 job_tag_freelance: "عمل حر",
-                avail_badge: "متاحة للمشاريع الحرة",
+                avail_badge: "متاح للمشاريع الحرة",
                 hire_title: "اطلب مشروعاً خاصاً",
-                hire_desc: "متاحة لجلسات التصوير التحريري، وتصميم الهويات البصرية، والاستشارات الفنية حول العالم.",
+                hire_desc: "متاح لجلسات التصوير التحريري، وتصميم الهويات البصرية، والاستشارات الفنية حول العالم.",
                 btn_start_project: "إرسال طلب عمل",
                 back_projects: "العودة للمشاريع",
                 modal_title: "تواصل معي",
@@ -902,11 +1215,16 @@
                 form_msg: "الرسالة",
                 form_send: "إرسال الرسالة",
                 form_thanks: "شكراً لك! تم إرسال رسالتك بنجاح.",
-                scroll_confirm_down: "مرر للأسفل مرة أخرى للتأكيد ↓",
-                scroll_confirm_up: "مرر للأعلى مرة أخرى للتأكيد ↑",
+                scroll_confirm_down: "مرر للأسفل مرة أخرى للتأكيد",
+                scroll_confirm_up: "مرر للأعلى مرة أخرى للتأكيد",
+                scroll_sub_down: "كرر التمرير للانتقال للصفحة التالية ↓",
+                scroll_sub_up: "كرر التمرير للانتقال للصفحة السابقة ↑",
                 nav_more: "المزيد",
                 btn_language: "تغيير اللغة",
-                menu_title: "التنقل"
+                menu_title: "التنقل",
+                menu_audio_label: "موسيقى الموقع",
+                audio_on: "شغال 🔊",
+                audio_off: "مكتوم 🔇"
             }
         };
 
@@ -976,20 +1294,19 @@
         }
 
         /**
-         * Toggles website language between English (LTR) and Arabic (RTL)
+         * Applies the active language ('ar' or 'en') across all elements
          */
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            const htmlEl = document.documentElement;
+        function applyLanguage(lang) {
+            currentLang = lang;
             const badge = document.getElementById('lang-badge');
             const mobileBadge = document.getElementById('mobile-lang-badge');
 
-            // Update badge labels to show the other language option
-            const targetBadgeText = currentLang === 'en' ? 'AR' : 'EN';
+            // Badge displays the opposite language option you will switch TO
+            const targetBadgeText = currentLang === 'ar' ? 'EN' : 'AR';
             if (badge) badge.textContent = targetBadgeText;
             if (mobileBadge) mobileBadge.textContent = targetBadgeText;
 
-            // Keep layout aesthetics intact while updating text content
+            // Apply translations to all tagged DOM elements
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (translations[currentLang] && translations[currentLang][key]) {
@@ -997,17 +1314,43 @@
                 }
             });
 
-            // Switch font family for optimal Arabic typography
+            // Adjust font family and document title
             if (currentLang === 'ar') {
                 document.body.style.fontFamily = "'Cairo', sans-serif";
+                document.documentElement.lang = "ar";
+                document.title = "معتصم - الملف الشخصي والأعمال";
             } else {
                 document.body.style.fontFamily = "'Inter', sans-serif";
+                document.documentElement.lang = "en";
+                document.title = "3asm - Personal Portfolio";
+            }
+
+            // Sync audio button title if exists
+            const audioBtn = document.getElementById('site-audio-toggle');
+            if (audioBtn) {
+                const isPlaying = audioBtn.classList.contains('is-playing');
+                if (isPlaying) {
+                    audioBtn.setAttribute('title', currentLang === 'ar' ? 'كتم الصوت' : 'Mute Audio');
+                } else {
+                    audioBtn.setAttribute('title', currentLang === 'ar' ? 'تشغيل الصوت' : 'Play Audio');
+                }
             }
 
             // Re-render dynamic Firebase projects if loaded
             if (typeof renderDynamicProjects === 'function') {
                 renderDynamicProjects();
             }
+        }
+
+        /**
+         * Toggles website language between Arabic and English
+         */
+        function toggleLanguage() {
+            const nextLang = currentLang === 'ar' ? 'en' : 'ar';
+            try {
+                localStorage.setItem('portfolio_lang', nextLang);
+            } catch (e) { }
+            applyLanguage(nextLang);
         }
 
         /**
@@ -1076,18 +1419,43 @@
 
         function showScrollToast(dir) {
             const toast = document.getElementById('scroll-confirm-toast');
-            const textEl = document.getElementById('scroll-confirm-text');
-            textEl.textContent = dir === 'down'
-                ? translations[currentLang].scroll_confirm_down
-                : translations[currentLang].scroll_confirm_up;
-            toast.classList.remove('opacity-0', 'translate-y-2');
-            toast.classList.add('opacity-100', 'translate-y-0');
+            const handWrapper = document.getElementById('scroll-hand-wrapper');
+            const arrowIcon = document.getElementById('scroll-arrow-icon');
+            const arrowPath = document.getElementById('scroll-arrow-path');
+            const progressCircle = document.getElementById('scroll-toast-circle-progress');
+
+            if (!toast) return;
+
+            // Set hand swipe animation & directional arrow
+            if (dir === 'down') {
+                if (handWrapper) handWrapper.className = "relative finger-down";
+                if (arrowIcon) arrowIcon.className = "w-3 h-3 text-accent drop-shadow-md trail-down";
+                if (arrowPath) arrowPath.setAttribute('d', 'M19 9l-7 7-7-7');
+            } else {
+                if (handWrapper) handWrapper.className = "relative finger-up";
+                if (arrowIcon) arrowIcon.className = "w-3 h-3 text-accent drop-shadow-md trail-up";
+                if (arrowPath) arrowPath.setAttribute('d', 'M5 15l7-7 7 7');
+            }
+
+            // Animate circular progress countdown ring (0 -> 170 over 1.8s)
+            if (progressCircle) {
+                progressCircle.style.transition = 'none';
+                progressCircle.style.strokeDashoffset = '0';
+                void progressCircle.offsetWidth; // Force CSS repaint
+                progressCircle.style.transition = 'stroke-dashoffset 1.8s linear';
+                progressCircle.style.strokeDashoffset = '170';
+            }
+
+            // Smooth spring entrance from bottom right
+            toast.classList.remove('opacity-0', 'scale-50', 'translate-y-3');
+            toast.classList.add('opacity-100', 'scale-100', 'translate-y-0');
         }
 
         function hideScrollToast() {
             const toast = document.getElementById('scroll-confirm-toast');
-            toast.classList.remove('opacity-100', 'translate-y-0');
-            toast.classList.add('opacity-0', 'translate-y-2');
+            if (!toast) return;
+            toast.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'scale-50', 'translate-y-3');
         }
 
         function handleDirectionalStep(dir) {
@@ -1207,13 +1575,34 @@
                         if (p1.view_projects_ar) translations.ar.view_projects = p1.view_projects_ar;
                         if (p1.view_projects_en) translations.en.view_projects = p1.view_projects_en;
                     }
+                    if (data && data.page2) {
+                        const p2 = data.page2.section || data.page2;
+                        if (p2.title_ar) translations.ar.page2_title = p2.title_ar;
+                        if (p2.title_en) translations.en.page2_title = p2.title_en;
+                        if (p2.subtitle_ar) translations.ar.page2_subtitle = p2.subtitle_ar;
+                        if (p2.subtitle_en) translations.en.page2_subtitle = p2.subtitle_en;
+                    }
+                    if (data && data.page3) {
+                        const p3 = data.page3;
+                        if (p3.title_ar) translations.ar.page3_title = p3.title_ar;
+                        if (p3.title_en) translations.en.page3_title = p3.title_en;
+                        if (p3.subtitle_ar) translations.ar.page3_subtitle = p3.subtitle_ar;
+                        if (p3.subtitle_en) translations.en.page3_subtitle = p3.subtitle_en;
+                    }
                 }
             } catch (e) { }
+            // Ensure default language is applied immediately on prehydration
+            if (typeof applyLanguage === 'function') {
+                applyLanguage(currentLang);
+            }
         })();
 
         // Initialize Page 0 on load to match the first orange rectangle on the right
         window.onload = () => {
             switchPage(0);
+            if (typeof applyLanguage === 'function') {
+                applyLanguage(currentLang);
+            }
         };
     </script>
 
@@ -1302,13 +1691,23 @@
                 if (p1) {
                     const heroImg = document.getElementById('hero-portrait-img');
                     if (heroImg) {
-                        if (p1.hero_image) {
+                        if (p1.hero_image && p1.hero_image.indexOf('hero-portrait.jpg') === -1) {
                             const currentApplied = heroImg.dataset.appliedSrc || heroImg.getAttribute('src');
-                            if (currentApplied !== p1.hero_image && !(currentApplied.endsWith('hero-portrait.jpg') && p1.hero_image.endsWith('hero-portrait.jpg'))) {
+                            if (currentApplied !== p1.hero_image) {
                                 heroImg.src = p1.hero_image;
                                 heroImg.dataset.appliedSrc = p1.hero_image;
+                                heroImg.onload = function () {
+                                    heroImg.classList.remove('opacity-0');
+                                };
+                                if (heroImg.complete && heroImg.naturalWidth > 0) {
+                                    heroImg.classList.remove('opacity-0');
+                                }
+                            } else {
+                                heroImg.classList.remove('opacity-0');
                             }
                             try { localStorage.setItem('portfolio_hero_image', p1.hero_image); } catch (e) { }
+                        } else if (p1.hero_image && p1.hero_image.indexOf('hero-portrait.jpg') !== -1) {
+                            try { localStorage.removeItem('portfolio_hero_image'); } catch (e) { }
                         }
                         if (p1.hero_color_mode) {
                             try { localStorage.setItem('portfolio_hero_color_mode', p1.hero_color_mode); } catch (e) { }
@@ -1329,6 +1728,10 @@
                     if (p1.btn_contact_en) translations.en.btn_contact = p1.btn_contact_en;
                     if (p1.view_projects_ar) translations.ar.view_projects = p1.view_projects_ar;
                     if (p1.view_projects_en) translations.en.view_projects = p1.view_projects_en;
+                    if (p1.bg_audio) {
+                        try { localStorage.setItem('portfolio_bg_audio', p1.bg_audio); } catch (e) { }
+                        if (window.setSiteAudioSource) window.setSiteAudioSource(p1.bg_audio);
+                    }
                 }
 
                 // Sync Page 2 (Selected Works / Projects)
@@ -1405,6 +1808,182 @@
         } catch (err) {
             console.warn("Firebase sync notice:", err);
         }
+    </script>
+
+    <!-- ================= BACKGROUND SITE AUDIO ENGINE ================= -->
+    <script>
+        (function initSiteAudio() {
+            const DEFAULT_AUDIO_URL = 'https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/ambient.mp3';
+            let audioEl = null;
+            let isMuted = false;
+            let synthInstance = null;
+
+            // Check if user previously muted explicitly
+            try {
+                isMuted = localStorage.getItem('portfolio_audio_muted') === 'true';
+            } catch (e) { }
+
+            function getAudioUrl() {
+                try {
+                    const custom = localStorage.getItem('portfolio_bg_audio');
+                    if (custom && custom.trim()) return custom.trim();
+                    const cached = localStorage.getItem('portfolio_cached_data');
+                    if (cached) {
+                        const parsed = JSON.parse(cached);
+                        if (parsed && parsed.page1 && parsed.page1.bg_audio) return parsed.page1.bg_audio.trim();
+                    }
+                } catch (e) { }
+                return DEFAULT_AUDIO_URL;
+            }
+
+            function updateAudioButtonUI(playing) {
+                const btn = document.getElementById('site-audio-toggle');
+                const mobBadge = document.getElementById('mobile-menu-audio-badge');
+                if (btn) {
+                    if (playing) {
+                        btn.classList.remove('is-muted');
+                        btn.classList.add('is-playing');
+                        btn.setAttribute('title', currentLang === 'ar' ? 'كتم الصوت' : 'Mute Audio');
+                    } else {
+                        btn.classList.remove('is-playing');
+                        btn.classList.add('is-muted');
+                        btn.setAttribute('title', currentLang === 'ar' ? 'تشغيل الصوت' : 'Play Audio');
+                    }
+                }
+                if (mobBadge) {
+                    if (playing) {
+                        mobBadge.textContent = (translations[currentLang] && translations[currentLang].audio_on) || "شغال 🔊";
+                        mobBadge.className = "px-2.5 py-0.5 rounded-full bg-accent/20 text-[11px] font-semibold text-accent border border-accent/30";
+                    } else {
+                        mobBadge.textContent = (translations[currentLang] && translations[currentLang].audio_off) || "مكتوم 🔇";
+                        mobBadge.className = "px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-semibold text-white/50 border border-white/10";
+                    }
+                }
+            }
+
+            // Procedural Web Audio Synth fallback in case audio file fails or network is blocked
+            function createSynth() {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return null;
+                    const ctx = new AudioContext();
+                    const masterGain = ctx.createGain();
+                    masterGain.gain.setValueAtTime(0.04, ctx.currentTime);
+                    masterGain.connect(ctx.destination);
+                    const freqs = [185.0, 220.0, 277.18, 329.63, 440.0];
+                    const oscs = freqs.map((f, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        const filter = ctx.createBiquadFilter();
+                        osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+                        osc.frequency.setValueAtTime(f, ctx.currentTime);
+                        filter.type = 'lowpass';
+                        filter.frequency.setValueAtTime(500 + i * 90, ctx.currentTime);
+                        gain.gain.setValueAtTime(0.02, ctx.currentTime);
+                        osc.connect(filter);
+                        filter.connect(gain);
+                        gain.connect(masterGain);
+                        osc.start();
+                        return osc;
+                    });
+                    return { ctx, masterGain, oscs };
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function playAudio() {
+                if (isMuted) return;
+                if (!audioEl) {
+                    audioEl = new Audio(getAudioUrl());
+                    audioEl.loop = true;
+                    audioEl.volume = 0.35;
+                    audioEl.preload = 'auto';
+
+                    audioEl.addEventListener('error', function () {
+                        // Fallback to soothing procedural synth if remote audio file is blocked
+                        if (!isMuted && !synthInstance) {
+                            synthInstance = createSynth();
+                        }
+                    });
+                }
+
+                if (synthInstance && synthInstance.ctx && synthInstance.ctx.state === 'suspended') {
+                    synthInstance.ctx.resume();
+                }
+
+                const playPromise = audioEl.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        updateAudioButtonUI(true);
+                    }).catch(() => {
+                        // Browser autoplay policy prevented playback before interaction.
+                        // Wait for ANY user gesture to immediately unlock and play sound
+                        const unlock = function () {
+                            if (!isMuted && audioEl) {
+                                audioEl.play().then(() => {
+                                    updateAudioButtonUI(true);
+                                }).catch(() => {
+                                    if (!isMuted && !synthInstance) synthInstance = createSynth();
+                                    updateAudioButtonUI(true);
+                                });
+                            }
+                            window.removeEventListener('pointerdown', unlock);
+                            window.removeEventListener('touchstart', unlock);
+                            window.removeEventListener('click', unlock);
+                            window.removeEventListener('keydown', unlock);
+                            window.removeEventListener('scroll', unlock);
+                            window.removeEventListener('wheel', unlock);
+                        };
+                        window.addEventListener('pointerdown', unlock, { once: true });
+                        window.addEventListener('touchstart', unlock, { once: true });
+                        window.addEventListener('click', unlock, { once: true });
+                        window.addEventListener('keydown', unlock, { once: true });
+                        window.addEventListener('scroll', unlock, { once: true });
+                        window.addEventListener('wheel', unlock, { once: true });
+                    });
+                }
+            }
+
+            function pauseAudio() {
+                if (audioEl) audioEl.pause();
+                if (synthInstance && synthInstance.ctx) {
+                    try { synthInstance.ctx.suspend(); } catch (e) { }
+                }
+                updateAudioButtonUI(false);
+            }
+
+            window.toggleSiteAudio = function () {
+                isMuted = !isMuted;
+                try {
+                    localStorage.setItem('portfolio_audio_muted', isMuted ? 'true' : 'false');
+                } catch (e) { }
+
+                if (isMuted) {
+                    pauseAudio();
+                } else {
+                    playAudio();
+                    updateAudioButtonUI(true);
+                }
+            };
+
+            window.setSiteAudioSource = function (newUrl) {
+                if (!newUrl) return;
+                if (audioEl) {
+                    const wasPlaying = !audioEl.paused;
+                    audioEl.src = newUrl;
+                    if (wasPlaying && !isMuted) audioEl.play().catch(() => { });
+                }
+            };
+
+            // Start up immediately: sound is unmuted/open by default
+            if (isMuted) {
+                updateAudioButtonUI(false);
+            } else {
+                updateAudioButtonUI(true);
+                playAudio();
+            }
+        })();
     </script>
 </body>
 
