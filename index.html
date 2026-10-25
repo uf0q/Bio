@@ -151,9 +151,11 @@
                 opacity: 1;
                 visibility: visible;
             }
+
             15% {
                 opacity: 1;
             }
+
             100% {
                 opacity: 0;
                 visibility: hidden;
@@ -166,6 +168,7 @@
                 opacity: 0;
                 transform: translateY(14px);
             }
+
             100% {
                 opacity: 1;
                 transform: translateY(0);
@@ -183,6 +186,7 @@
                 opacity: 0;
                 transform: translateY(-8px);
             }
+
             100% {
                 opacity: 1;
                 transform: translateY(0);
@@ -196,20 +200,51 @@
 
         /* ================= Background Site Audio Controller ================= */
         @keyframes audioWave1 {
-            0%, 100% { height: 4px; }
-            50% { height: 14px; }
+
+            0%,
+            100% {
+                height: 4px;
+            }
+
+            50% {
+                height: 14px;
+            }
         }
+
         @keyframes audioWave2 {
-            0%, 100% { height: 13px; }
-            50% { height: 3px; }
+
+            0%,
+            100% {
+                height: 13px;
+            }
+
+            50% {
+                height: 3px;
+            }
         }
+
         @keyframes audioWave3 {
-            0%, 100% { height: 5px; }
-            50% { height: 15px; }
+
+            0%,
+            100% {
+                height: 5px;
+            }
+
+            50% {
+                height: 15px;
+            }
         }
+
         @keyframes audioWave4 {
-            0%, 100% { height: 12px; }
-            50% { height: 4px; }
+
+            0%,
+            100% {
+                height: 12px;
+            }
+
+            50% {
+                height: 4px;
+            }
         }
 
         .sound-bar {
@@ -223,12 +258,15 @@
         .audio-btn.is-playing .sound-bar-1 {
             animation: audioWave1 0.75s ease-in-out infinite alternate;
         }
+
         .audio-btn.is-playing .sound-bar-2 {
             animation: audioWave2 0.65s ease-in-out infinite alternate 0.12s;
         }
+
         .audio-btn.is-playing .sound-bar-3 {
             animation: audioWave3 0.85s ease-in-out infinite alternate 0.22s;
         }
+
         .audio-btn.is-playing .sound-bar-4 {
             animation: audioWave4 0.7s ease-in-out infinite alternate 0.08s;
         }
@@ -239,6 +277,7 @@
             height: 2px !important;
             opacity: 0.35;
         }
+
         .audio-btn.is-muted .music-note-icon {
             opacity: 0.4;
             transform: scale(0.95);
@@ -285,14 +324,17 @@
                 transform: translateY(-8px) scale(0.92);
                 opacity: 0.1;
             }
+
             20% {
                 transform: translateY(-5px) scale(1.04);
                 opacity: 1;
             }
+
             75% {
                 transform: translateY(6px) scale(1);
                 opacity: 1;
             }
+
             100% {
                 transform: translateY(10px) scale(0.92);
                 opacity: 0;
@@ -304,14 +346,17 @@
                 transform: translateY(8px) scale(0.92);
                 opacity: 0.1;
             }
+
             20% {
                 transform: translateY(5px) scale(1.04);
                 opacity: 1;
             }
+
             75% {
                 transform: translateY(-6px) scale(1);
                 opacity: 1;
             }
+
             100% {
                 transform: translateY(-10px) scale(0.92);
                 opacity: 0;
@@ -319,10 +364,13 @@
         }
 
         @keyframes swipeTrailDown {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(-3px);
                 opacity: 0.3;
             }
+
             50% {
                 transform: translateY(4px);
                 opacity: 1;
@@ -330,10 +378,13 @@
         }
 
         @keyframes swipeTrailUp {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(3px);
                 opacity: 0.3;
             }
+
             50% {
                 transform: translateY(-4px);
                 opacity: 1;
@@ -345,6 +396,7 @@
                 transform: scale(0.3);
                 opacity: 0.9;
             }
+
             100% {
                 transform: scale(1.8);
                 opacity: 0;
@@ -352,9 +404,12 @@
         }
 
         @keyframes scrollIconBeacon {
-            0%, 100% {
+
+            0%,
+            100% {
                 box-shadow: 0 0 0 0 rgba(197, 123, 67, 0.4);
             }
+
             50% {
                 box-shadow: 0 0 18px 3px rgba(197, 123, 67, 0.4);
             }
@@ -403,7 +458,8 @@
     <main class="relative w-full h-full bg-darkBg overflow-hidden flex flex-col justify-between text-white">
 
         <!-- ================= TOP NAVIGATION BAR ================= -->
-        <header class="top-nav-entrance relative z-30 flex items-center justify-between px-6 sm:px-16 lg:px-24 pt-6 sm:pt-8 pb-4">
+        <header
+            class="top-nav-entrance relative z-30 flex items-center justify-between px-6 sm:px-16 lg:px-24 pt-6 sm:pt-8 pb-4">
             <!-- Brand Logo -->
             <a href="#home" onclick="switchPage(0); return false;"
                 class="font-serif italic text-xl sm:text-2xl tracking-wide text-white hover:text-accent transition-colors">
@@ -458,17 +514,17 @@
                 </div>
 
                 <!-- Site Background Audio Controller Button (بجانب زر المزيد) -->
-                <button id="site-audio-toggle" onclick="toggleSiteAudio()"
-                    title="صوت الموقع / Site Audio"
+                <button id="site-audio-toggle" onclick="toggleSiteAudio()" title="صوت الموقع / Site Audio"
                     aria-label="Toggle site background music"
                     class="audio-btn is-playing group relative flex items-center justify-center gap-1.5 px-3 h-8 rounded-full border border-accent/40 bg-accent/10 hover:bg-accent/20 text-accent transition-all duration-300 shadow-sm hover:shadow-accent/25 active:scale-95 cursor-pointer">
-                    
+
                     <!-- Music Icon & Animated Dancing Equalizer Bars (أغنية تتحرك) -->
                     <div class="relative flex items-center gap-1.5 h-3.5 select-none">
                         <!-- Music Note SVG -->
                         <svg class="music-note-icon w-3.5 h-3.5 transition-all duration-300 group-hover:scale-110"
                             fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                            <path
+                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
                         </svg>
 
                         <!-- Equalizer Moving Sound Wave Bars -->
@@ -662,7 +718,7 @@
                                     <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1 rtl:group-hover/btn:-translate-x-1"
                                         fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                             d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
                                 </a>
                             </div>
@@ -778,7 +834,8 @@
                                         فرنسا</p>
                                 </div>
                                 <span data-i18n="job_tag_full"
-                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-accent/40 text-accent">دوام كامل</span>
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-accent/40 text-accent">دوام
+                                    كامل</span>
                             </div>
 
                             <!-- Job Item 2 -->
@@ -792,7 +849,8 @@
                                         برلين</p>
                                 </div>
                                 <span data-i18n="job_tag_contract"
-                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">عقد عمل</span>
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">عقد
+                                    عمل</span>
                             </div>
 
                             <!-- Job Item 3 -->
@@ -806,7 +864,8 @@
                                         حول العالم</p>
                                 </div>
                                 <span data-i18n="job_tag_freelance"
-                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">عمل حر</span>
+                                    class="self-start sm:self-center text-[10px] px-2.5 py-1 rounded-full border border-white/20 text-white/60">عمل
+                                    حر</span>
                             </div>
                         </div>
 
@@ -935,7 +994,8 @@
                             <span
                                 class="mobile-nav-num text-xs font-mono text-white/40 group-hover:text-accent transition-colors">02</span>
                             <span data-i18n="nav_creatives"
-                                class="mobile-nav-label text-base font-light tracking-wide text-white">الأعمال الإبداعية</span>
+                                class="mobile-nav-label text-base font-light tracking-wide text-white">الأعمال
+                                الإبداعية</span>
                         </span>
                         <span class="mobile-nav-dot w-2 h-2 rounded-full bg-accent opacity-0 transition-opacity"></span>
                     </button>
@@ -947,7 +1007,8 @@
                             <span
                                 class="mobile-nav-num text-xs font-mono text-white/40 group-hover:text-accent transition-colors">03</span>
                             <span data-i18n="nav_jobs"
-                                class="mobile-nav-label text-base font-light tracking-wide text-white">الخبرات والوظائف</span>
+                                class="mobile-nav-label text-base font-light tracking-wide text-white">الخبرات
+                                والوظائف</span>
                         </span>
                         <span class="mobile-nav-dot w-2 h-2 rounded-full bg-accent opacity-0 transition-opacity"></span>
                     </button>
@@ -974,7 +1035,8 @@
                             <span data-i18n="menu_audio_label">صوت الموقع</span>
                         </div>
                         <span id="mobile-menu-audio-badge"
-                            class="px-2.5 py-0.5 rounded-full bg-accent/20 text-[11px] font-semibold text-accent border border-accent/30">شغال 🔊</span>
+                            class="px-2.5 py-0.5 rounded-full bg-accent/20 text-[11px] font-semibold text-accent border border-accent/30">شغال
+                            🔊</span>
                     </button>
 
                     <!-- زر تغيير اللغة (Language Switcher Button) -->
@@ -1020,7 +1082,8 @@
                     </div>
                     <div>
                         <label data-i18n="form_email"
-                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">البريد الإلكتروني</label>
+                            class="block text-[11px] text-white/60 uppercase tracking-wider mb-1">البريد
+                            الإلكتروني</label>
                         <input type="email" required
                             class="w-full bg-darkBg border border-white/15 focus:border-accent rounded-lg px-3.5 py-2 text-sm text-white outline-none transition-colors"
                             placeholder="name@example.com">
@@ -1051,16 +1114,14 @@
             class="fixed bottom-7 right-6 sm:bottom-9 sm:right-9 z-40 pointer-events-none opacity-0 scale-50 translate-y-3 scroll-circle-pop select-none">
             <div
                 class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-cardBg/90 backdrop-blur-xl border border-accent/40 text-accent shadow-2xl shadow-accent/25 flex items-center justify-center ring-1 ring-white/10 scroll-icon-pulse overflow-hidden">
-                
+
                 <!-- Circular Countdown Progress SVG Ring (مؤقت دائري نيون 1.8 ثانية) -->
                 <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 60 60">
                     <!-- Background Muted Ring -->
-                    <circle cx="30" cy="30" r="27"
-                        stroke="rgba(255, 255, 255, 0.08)" stroke-width="2.5" fill="none" />
+                    <circle cx="30" cy="30" r="27" stroke="rgba(255, 255, 255, 0.08)" stroke-width="2.5" fill="none" />
                     <!-- Animated Progress Indicator Ring -->
-                    <circle id="scroll-toast-circle-progress" cx="30" cy="30" r="27"
-                        stroke="#c57b43" stroke-width="2.5" stroke-linecap="round" fill="none"
-                        stroke-dasharray="170" stroke-dashoffset="0"
+                    <circle id="scroll-toast-circle-progress" cx="30" cy="30" r="27" stroke="#c57b43" stroke-width="2.5"
+                        stroke-linecap="round" fill="none" stroke-dasharray="170" stroke-dashoffset="0"
                         class="scroll-countdown-circle" />
                 </svg>
 
@@ -1069,11 +1130,13 @@
                     <!-- Pointing Hand Finger SVG (أنيميشن تمرير إصبع اليد) -->
                     <div id="scroll-hand-wrapper" class="relative finger-down">
                         <!-- Contact Touch Ripple at fingertip -->
-                        <span id="scroll-touch-dot" class="absolute -top-1 left-2.5 w-2 h-2 rounded-full bg-accent/60 touch-pulse"></span>
-                        
+                        <span id="scroll-touch-dot"
+                            class="absolute -top-1 left-2.5 w-2 h-2 rounded-full bg-accent/60 touch-pulse"></span>
+
                         <!-- Hand with Pointing Index Finger SVG -->
                         <svg id="scroll-hand-icon" class="w-7 h-7 sm:w-7.5 sm:h-7.5 text-accent drop-shadow-md"
-                            viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.22" stroke="currentColor"
+                            stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <!-- Outstretched Index Finger -->
                             <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" />
                             <!-- Middle finger -->
@@ -1081,22 +1144,25 @@
                             <!-- Ring finger -->
                             <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2" />
                             <!-- Palm, Thumb & Base -->
-                            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.83l1.76 1.77" />
+                            <path
+                                d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.83l1.76 1.77" />
                         </svg>
                     </div>
 
                     <!-- Small Side Direction Arrow / Trail -->
                     <div id="scroll-arrow-wrapper" class="absolute -right-2 flex flex-col items-center">
-                        <svg id="scroll-arrow-icon" class="w-3 h-3 text-accent drop-shadow-md trail-down"
-                            fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path id="scroll-arrow-path" stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        <svg id="scroll-arrow-icon" class="w-3 h-3 text-accent drop-shadow-md trail-down" fill="none"
+                            stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path id="scroll-arrow-path" stroke-linecap="round" stroke-linejoin="round"
+                                d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
                 </div>
 
                 <!-- Floating Step Beacon in Top Corner -->
                 <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent border border-black/80"></span>
                 </span>
             </div>
@@ -1813,10 +1879,15 @@
     <!-- ================= BACKGROUND SITE AUDIO ENGINE ================= -->
     <script>
         (function initSiteAudio() {
-            const DEFAULT_AUDIO_URL = '';
+            const DEFAULT_AUDIO_URL = 'https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/ambient.mp3';
+            const FALLBACK_URLS = [
+                'https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/ambient.mp3',
+                'https://raw.githubusercontent.com/florinpop17/stream-songs/master/ambient.mp3'
+            ];
             let audioEl = null;
             let isMuted = false;
             let synthInstance = null;
+            let fallbackAttempt = 0;
 
             // Check if user previously muted explicitly
             try {
@@ -1901,9 +1972,19 @@
                     audioEl.preload = 'auto';
 
                     audioEl.addEventListener('error', function () {
-                        // Fallback to soothing procedural synth if remote audio file is blocked
+                        // Try fallback URL if the primary CDN fails
+                        if (fallbackAttempt < FALLBACK_URLS.length) {
+                            const nextUrl = FALLBACK_URLS[fallbackAttempt++];
+                            if (audioEl.src !== nextUrl) {
+                                audioEl.src = nextUrl;
+                                audioEl.play().then(() => updateAudioButtonUI(true)).catch(() => {});
+                                return;
+                            }
+                        }
+                        // Fallback to soothing procedural synth if all remote audio files fail
                         if (!isMuted && !synthInstance) {
                             synthInstance = createSynth();
+                            updateAudioButtonUI(true);
                         }
                     });
                 }
