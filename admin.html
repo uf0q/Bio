@@ -1880,14 +1880,9 @@
     <script>
         (function initSiteAudio() {
             const DEFAULT_AUDIO_URL = 'https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/ambient.mp3';
-            const FALLBACK_URLS = [
-                'https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/ambient.mp3',
-                'https://raw.githubusercontent.com/florinpop17/stream-songs/master/ambient.mp3'
-            ];
             let audioEl = null;
             let isMuted = false;
             let synthInstance = null;
-            let fallbackAttempt = 0;
 
             // Check if user previously muted explicitly
             try {
@@ -1972,19 +1967,9 @@
                     audioEl.preload = 'auto';
 
                     audioEl.addEventListener('error', function () {
-                        // Try fallback URL if the primary CDN fails
-                        if (fallbackAttempt < FALLBACK_URLS.length) {
-                            const nextUrl = FALLBACK_URLS[fallbackAttempt++];
-                            if (audioEl.src !== nextUrl) {
-                                audioEl.src = nextUrl;
-                                audioEl.play().then(() => updateAudioButtonUI(true)).catch(() => {});
-                                return;
-                            }
-                        }
-                        // Fallback to soothing procedural synth if all remote audio files fail
+                        // Fallback to soothing procedural synth if remote audio file is blocked
                         if (!isMuted && !synthInstance) {
                             synthInstance = createSynth();
-                            updateAudioButtonUI(true);
                         }
                     });
                 }
