@@ -546,7 +546,8 @@
                                 <div id="hero-preview-wrapper" ondblclick="openHeroCropper()"
                                     class="relative h-64 rounded-xl overflow-hidden bg-black/80 border border-white/10 group shadow-inner cursor-pointer select-none"
                                     title="انقر مرتين (Double Click) على الصورة لقصها">
-                                    <img id="p1-hero-preview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E"
+                                    <img id="p1-hero-preview" src="hero-portrait.jpg"
+                                        onerror="this.src='hero-portrait.jpg'"
                                         class="w-full h-full object-cover object-top grayscale transition-all duration-500 group-hover:scale-105"
                                         alt="Hero Portrait">
 
@@ -654,6 +655,10 @@
                                 <!-- Quick Presets -->
                                 <div class="pt-2 border-t border-white/5 flex flex-wrap gap-2 items-center text-xs">
                                     <span class="text-[11px] text-white/40">نماذج سريعة:</span>
+                                    <button type="button" onclick="setHeroPreset('hero-portrait.jpg')"
+                                        class="px-2.5 py-1 rounded-lg border border-white/10 hover:border-white/20 bg-white/[0.02] text-[11px] text-white/60 hover:text-white transition-all">
+                                        الصورة المعتمدة
+                                    </button>
                                     <button type="button"
                                         onclick="setHeroPreset('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=750&q=80')"
                                         class="px-2.5 py-1 rounded-lg border border-white/10 hover:border-white/20 bg-white/[0.02] text-[11px] text-white/60 hover:text-white transition-all">
@@ -712,53 +717,6 @@
                                 <label class="block text-xs text-white/70 mb-1 text-left">Contact Button (EN)</label>
                                 <input type="text" id="p1-btn-contact-en" placeholder="contact"
                                     class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white text-left">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Background Music Card (صوت وموسيقى الموقع) -->
-                    <div class="glass-card rounded-2xl p-5 lg:p-6 space-y-4">
-                        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                            <div class="flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                                <h3 class="text-sm font-bold text-white">صوت وموسيقى خلفية الموقع (Site Ambient Music)</h3>
-                            </div>
-                            <span class="text-[11px] font-mono text-white/40">Background Audio</span>
-                        </div>
-
-                        <div class="space-y-3">
-                            <div>
-                                <label class="block text-xs text-white/70 mb-1">رابط ملف الصوت المباشر (Direct MP3 Link)</label>
-                                <div class="flex gap-2">
-                                    <input type="url" id="p1-bg-audio-input"
-                                        placeholder="https://cdn.jsdelivr.net/.../ambient.mp3"
-                                        class="flex-1 glass-input rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white font-mono" dir="ltr">
-                                    <button type="button" onclick="previewAdminAudio()" id="btn-preview-audio"
-                                        class="px-4 py-2 rounded-xl border border-white/10 hover:border-accent bg-white/5 hover:bg-accent/20 text-white text-xs font-medium transition-all flex items-center gap-1.5 whitespace-nowrap">
-                                        <span>▶ استماع</span>
-                                    </button>
-                                </div>
-                                <span class="text-[11px] text-white/40 block mt-1">يشتغل تلقائياً عند دخول الزائر للموقع مع زر فتح وكتم أنيق بالشريط العلوي.</span>
-                            </div>
-
-                            <!-- Presets -->
-                            <div class="pt-2 border-t border-white/5 flex flex-wrap gap-2 items-center text-xs">
-                                <span class="text-[11px] text-white/40">نماذج موسيقية جاهزة:</span>
-                                <button type="button"
-                                    onclick="setAudioPreset('https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/ambient.mp3')"
-                                    class="px-2.5 py-1 rounded-lg border border-white/10 hover:border-accent/50 bg-white/[0.02] text-[11px] text-white/70 hover:text-white transition-all">
-                                    ✨ أجواء سينمائية هادئة (Ambient)
-                                </button>
-                                <button type="button"
-                                    onclick="setAudioPreset('https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/study.mp3')"
-                                    class="px-2.5 py-1 rounded-lg border border-white/10 hover:border-accent/50 bg-white/[0.02] text-[11px] text-white/70 hover:text-white transition-all">
-                                    🎹 بيانو واسترخاء (Chill Piano)
-                                </button>
-                                <button type="button"
-                                    onclick="setAudioPreset('https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/forest.mp3')"
-                                    class="px-2.5 py-1 rounded-lg border border-white/10 hover:border-accent/50 bg-white/[0.02] text-[11px] text-white/70 hover:text-white transition-all">
-                                    🌲 أصوات الطبيعة (Forest)
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1006,34 +964,18 @@
                         <p class="text-[11px] text-white/50">اسحب الإطار لتحديد الجزء المناسب، ثم احفظ التعديل</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="document.getElementById('p1-hero-file-picker').click()"
-                        class="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white text-xs border border-white/10 flex items-center gap-1.5 transition-all"
-                        title="اختيار صورة من جهازك لقصها">
-                        <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        <span class="hidden sm:inline">من جهازك</span>
-                    </button>
-                    <button type="button" onclick="closeHeroCropper()"
-                        class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white flex items-center justify-center text-sm transition-colors"
-                        title="إغلاق">
-                        ✕
-                    </button>
-                </div>
+                <button type="button" onclick="closeHeroCropper()"
+                    class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white flex items-center justify-center text-sm transition-colors"
+                    title="إغلاق">
+                    ✕
+                </button>
             </div>
 
             <!-- Cropper Canvas Container -->
             <div class="relative bg-black/95 flex items-center justify-center overflow-hidden p-2"
                 style="height: min(50vh, 420px);">
-                <!-- Loading Indicator -->
-                <div id="cropper-loader" class="absolute inset-0 bg-black/85 flex flex-col items-center justify-center gap-2.5 z-20 hidden">
-                    <span class="w-8 h-8 border-2 border-sky-400 border-t-transparent rounded-full animate-spin"></span>
-                    <span class="text-xs text-white/90 font-medium tracking-wide">جاري جلب وتجهيز الصورة للقص...</span>
-                    <span class="text-[10px] text-white/40">يرجى الانتظار ثانية واحدة</span>
-                </div>
-                <img id="cropper-target-img" src="" alt="Hero Image to Crop" class="max-h-full max-w-full block">
+                <img id="cropper-target-img" src="" alt="Hero Image to Crop" class="max-h-full max-w-full block"
+                    crossorigin="anonymous">
             </div>
 
             <!-- Cropper Controls & Toolbar -->
@@ -1144,9 +1086,8 @@
         // Master App State
         const defaultState = {
             page1: {
-                hero_image: "",
+                hero_image: "hero-portrait.jpg",
                 hero_color_mode: "color",
-                bg_audio: "https://cdn.jsdelivr.net/gh/florinpop17/stream-songs@master/ambient.mp3",
                 name_ar: "معـــتصم",
                 name_en: "mutasim",
                 role_ar: "مبرمج و أخصائي نفسي",
@@ -1275,24 +1216,11 @@
         // Live Hero Image Update
         window.handleHeroImageInput = function (url) {
             if (!window.appState.page1) window.appState.page1 = {};
-            if (url && url.indexOf('hero-portrait.jpg') !== -1) {
-                url = '';
-            }
             window.appState.page1.hero_image = url;
             const img = document.getElementById('p1-hero-preview');
-            if (img) {
-                if (url) {
-                    img.src = url;
-                } else {
-                    img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E";
-                }
-            }
+            if (img && url) img.src = url;
             try {
-                if (url) {
-                    localStorage.setItem('portfolio_hero_image', url);
-                } else {
-                    localStorage.removeItem('portfolio_hero_image');
-                }
+                if (url) localStorage.setItem('portfolio_hero_image', url);
             } catch (e) { }
         };
 
@@ -1300,47 +1228,6 @@
             const input = document.getElementById('p1-hero-img-input');
             if (input) input.value = url;
             handleHeroImageInput(url);
-        };
-
-        // Site Audio Helpers for Admin
-        let adminAudioPreview = null;
-        window.previewAdminAudio = function () {
-            const input = document.getElementById('p1-bg-audio-input');
-            const btn = document.getElementById('btn-preview-audio');
-            const url = input ? input.value.trim() : '';
-            if (!url) {
-                showToast("يرجى إدخال رابط صوت أو اختيار نموذج أولاً", true);
-                return;
-            }
-            if (adminAudioPreview && !adminAudioPreview.paused) {
-                adminAudioPreview.pause();
-                if (btn) btn.innerHTML = '<span>▶ استماع</span>';
-                return;
-            }
-            if (!adminAudioPreview) {
-                adminAudioPreview = new Audio(url);
-            } else {
-                adminAudioPreview.src = url;
-            }
-            adminAudioPreview.play().then(() => {
-                if (btn) btn.innerHTML = '<span>⏸ إيقاف</span>';
-            }).catch(err => {
-                showToast("تعذر تشغيل الصوت من هذا الرابط، تأكد من صحته", true);
-            });
-            adminAudioPreview.onended = () => {
-                if (btn) btn.innerHTML = '<span>▶ استماع</span>';
-            };
-        };
-
-        window.setAudioPreset = function (url) {
-            const input = document.getElementById('p1-bg-audio-input');
-            if (input) input.value = url;
-            if (adminAudioPreview && !adminAudioPreview.paused) {
-                adminAudioPreview.pause();
-                const btn = document.getElementById('btn-preview-audio');
-                if (btn) btn.innerHTML = '<span>▶ استماع</span>';
-            }
-            showToast("تم اختيار المقطع الصوتي، اضغط حفظ للتطبيق في الموقع");
         };
 
         // Hero Color Mode: 'grayscale' (أبيض وأسود) vs 'color' (بالألوان الطبيعية)
@@ -1395,12 +1282,6 @@
                 if (input) input.value = dataUrl;
                 handleHeroImageInput(dataUrl);
                 showToast("تم اختيار ومعاينة الصورة من جهازك بنجاح");
-
-                // If cropper modal is currently open, reload with new image
-                const modal = document.getElementById('hero-crop-modal');
-                if (modal && !modal.classList.contains('hidden')) {
-                    openHeroCropper();
-                }
             };
             reader.readAsDataURL(file);
         };
@@ -1409,66 +1290,20 @@
         window.heroCropperInstance = null;
         let currentCropRatio = 3 / 4;
 
-        // Converts remote URLs to local blob URLs to completely bypass CORS and tainted canvas errors
-        async function fetchImageAsLocalBlobUrl(url) {
-            if (!url) return null;
-            if (url.startsWith('data:') || url.startsWith('blob:')) {
-                return url;
-            }
-
-            // Attempt 1: Direct fetch with CORS mode
-            try {
-                const res = await fetch(url, { mode: 'cors' });
-                if (res.ok) {
-                    const blob = await res.blob();
-                    if (blob && blob.size > 0) return URL.createObjectURL(blob);
-                }
-            } catch (e) {
-                console.log("Direct CORS fetch failed, trying proxy 1...");
-            }
-
-            // Attempt 2: CORS proxy (corsproxy.io)
-            try {
-                const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(url)}`);
-                if (res.ok) {
-                    const blob = await res.blob();
-                    if (blob && blob.size > 0) return URL.createObjectURL(blob);
-                }
-            } catch (e) {
-                console.log("Proxy 1 failed, trying proxy 2...");
-            }
-
-            // Attempt 3: AllOrigins raw proxy
-            try {
-                const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-                if (res.ok) {
-                    const blob = await res.blob();
-                    if (blob && blob.size > 0) return URL.createObjectURL(blob);
-                }
-            } catch (e) {
-                console.log("Proxy 2 failed, falling back to direct URL...");
-            }
-
-            return url;
-        }
-
-        window.openHeroCropper = async function () {
-            const input = document.getElementById('p1-hero-img-input');
+        window.openHeroCropper = function () {
             const preview = document.getElementById('p1-hero-preview');
-            const inputVal = input ? input.value.trim() : '';
-            const previewSrc = (preview && preview.src && !preview.src.includes('placehold.co') && !preview.src.includes('image/svg+xml'))
+            const input = document.getElementById('p1-hero-img-input');
+            const targetSrc = (preview && preview.src && !preview.src.includes('placehold.co'))
                 ? preview.src
-                : '';
-            const targetSrc = inputVal || previewSrc;
+                : (input ? input.value.trim() : '');
 
             if (!targetSrc) {
-                showToast("يرجى إدخال رابط صورة أو اختيار ملف أولاً لتتمكن من قصها", true);
+                showToast("يرجى اختيار صورة أولاً لتتمكن من قصها", true);
                 return;
             }
 
             const modal = document.getElementById('hero-crop-modal');
             const targetImg = document.getElementById('cropper-target-img');
-            const loader = document.getElementById('cropper-loader');
             if (!modal || !targetImg) return;
 
             // Destroy previous cropper instance if active
@@ -1478,13 +1313,8 @@
             }
 
             modal.classList.remove('hidden');
-            if (loader) loader.classList.remove('hidden');
-
-            // Fetch and convert remote image to safe local blob to bypass CORS
-            const safeSrc = await fetchImageAsLocalBlobUrl(targetSrc);
 
             targetImg.onload = function () {
-                if (loader) loader.classList.add('hidden');
                 if (window.heroCropperInstance) {
                     window.heroCropperInstance.destroy();
                 }
@@ -1502,7 +1332,7 @@
                         cropBoxResizable: true,
                         toggleDragModeOnDblclick: false,
                         responsive: true,
-                        checkCrossOrigin: false
+                        checkCrossOrigin: true
                     });
                 } catch (e) {
                     console.error("Cropper init failed:", e);
@@ -1510,21 +1340,15 @@
             };
 
             targetImg.onerror = function () {
-                if (loader) loader.classList.add('hidden');
-                showToast("تعذر تحميل الصورة من هذا الرابط. يمكنك حفظها على جهازك واختيارها عبر «من جهازك» لقصها فوراً دون قيود.", true);
+                showToast("تعذر تحميل الصورة داخل محرر القص (قد تكون الصورة برابط غير صالح)", true);
             };
 
-            targetImg.src = safeSrc;
-            if (targetImg.complete && targetImg.naturalWidth > 0) {
-                targetImg.onload();
-            }
+            targetImg.src = targetSrc;
         };
 
         window.closeHeroCropper = function () {
             const modal = document.getElementById('hero-crop-modal');
-            const loader = document.getElementById('cropper-loader');
             if (modal) modal.classList.add('hidden');
-            if (loader) loader.classList.add('hidden');
             if (window.heroCropperInstance) {
                 window.heroCropperInstance.destroy();
                 window.heroCropperInstance = null;
@@ -1667,9 +1491,8 @@
 
             // Page 1
             if (s.page1) {
-                const heroVal = (s.page1.hero_image && s.page1.hero_image.indexOf('hero-portrait.jpg') === -1) ? s.page1.hero_image : '';
-                document.getElementById('p1-hero-img-input').value = heroVal;
-                handleHeroImageInput(heroVal);
+                document.getElementById('p1-hero-img-input').value = s.page1.hero_image || '';
+                handleHeroImageInput(s.page1.hero_image || '');
                 setHeroColorMode(s.page1.hero_color_mode || 'grayscale');
                 document.getElementById('p1-name-ar').value = s.page1.name_ar || '';
                 document.getElementById('p1-name-en').value = s.page1.name_en || '';
@@ -1677,8 +1500,6 @@
                 document.getElementById('p1-role-en').value = s.page1.role_en || '';
                 document.getElementById('p1-btn-contact-ar').value = s.page1.btn_contact_ar || '';
                 document.getElementById('p1-btn-contact-en').value = s.page1.btn_contact_en || '';
-                const bgAudioInput = document.getElementById('p1-bg-audio-input');
-                if (bgAudioInput) bgAudioInput.value = s.page1.bg_audio || '';
             }
 
             // Page 2
@@ -1926,8 +1747,6 @@
             s.page1.role_en = document.getElementById('p1-role-en').value.trim();
             s.page1.btn_contact_ar = document.getElementById('p1-btn-contact-ar').value.trim();
             s.page1.btn_contact_en = document.getElementById('p1-btn-contact-en').value.trim();
-            const bgAudioEl = document.getElementById('p1-bg-audio-input');
-            s.page1.bg_audio = bgAudioEl ? bgAudioEl.value.trim() : '';
 
             // Page 2
             s.page2.title_ar = document.getElementById('p2-title-ar').value.trim();
@@ -1976,9 +1795,6 @@
                         if (window.appState.page1.hero_color_mode) {
                             localStorage.setItem('portfolio_hero_color_mode', window.appState.page1.hero_color_mode);
                         }
-                        if (window.appState.page1.bg_audio) {
-                            localStorage.setItem('portfolio_bg_audio', window.appState.page1.bg_audio);
-                        }
                     }
                 } catch (e) { }
                 showToast("✓ تم حفظ ونشر جميع التعديلات في موقعك فورياً!");
@@ -2009,17 +1825,10 @@
         onValue(portfolioRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                if (data.page1 && data.page1.hero_image && data.page1.hero_image.indexOf('hero-portrait.jpg') !== -1) {
-                    data.page1.hero_image = '';
-                }
                 try {
                     localStorage.setItem('portfolio_cached_data', JSON.stringify(data));
                     if (data.page1) {
-                        if (data.page1.hero_image && data.page1.hero_image.indexOf('hero-portrait.jpg') === -1) {
-                            localStorage.setItem('portfolio_hero_image', data.page1.hero_image);
-                        } else {
-                            localStorage.removeItem('portfolio_hero_image');
-                        }
+                        if (data.page1.hero_image) localStorage.setItem('portfolio_hero_image', data.page1.hero_image);
                         if (data.page1.hero_color_mode) localStorage.setItem('portfolio_hero_color_mode', data.page1.hero_color_mode);
                     }
                 } catch (e) { }
